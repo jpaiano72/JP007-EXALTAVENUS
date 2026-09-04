@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 import stars from "@/assets/stars.jpg";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.1.0";
+const SITE_VERSION = "1.1.1";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -164,10 +164,9 @@ function Index() {
         <h2 className="mt-3 text-3xl sm:text-4xl">Quem lê o seu mapa</h2>
         <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
           <p>
-            [Texto de exemplo — substitua pelo seu.] Sou astróloga e estudo o céu há alguns anos,
-            com formação em astrologia tradicional e contemporânea. Meu trabalho nasce da vontade de
-            traduzir o simbolismo dos astros em algo concreto, que caiba na vida real de quem me
-            procura.
+            Sou astróloga e estudo o céu há alguns anos, transitando entre a astrologia tradicional
+            e a contemporânea. Meu trabalho nasce da vontade de traduzir o simbolismo dos astros em
+            algo concreto, que caiba na vida real de quem me procura.
           </p>
           <p>
             Não trabalho com relatórios prontos nem com interpretações geradas por programas. Cada
