@@ -154,7 +154,7 @@ function Index() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      <p className="absolute left-3 top-3 text-[10px] text-muted-foreground/40">v{SITE_VERSION}</p>
+      <p className="absolute left-3 top-3 text-[10px] text-gold/80">v{SITE_VERSION}</p>
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-40"
