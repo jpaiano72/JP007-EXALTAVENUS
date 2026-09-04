@@ -3,7 +3,11 @@ import { useState, type FormEvent } from "react";
 import stars from "@/assets/stars.jpg";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.1.0";
+const SITE_VERSION = "1.2.0";
+
+// Número de destino dos pedidos (formato internacional, só dígitos).
+// Trocar aqui quando migrar para o número da Luciana.
+const WHATSAPP_NUMERO = "5511988592179";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -85,6 +89,7 @@ function Index() {
   const [enviado, setEnviado] = useState(false);
   const [horaDesconhecida, setHoraDesconhecida] = useState(false);
   const [nome, setNome] = useState("");
+  const [linkWhatsapp, setLinkWhatsapp] = useState("");
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -115,6 +120,25 @@ function Index() {
     } catch {
       // Armazenamento local indisponível (modo privado, etc.): segue o fluxo normalmente.
     }
+
+    const mensagemWhatsapp = [
+      "Olá! Vim pelo site e quero meu mapa astral.",
+      "",
+      `Nome: ${pedido.nome}`,
+      `E-mail: ${pedido.email}`,
+      `WhatsApp: ${pedido.whatsapp}`,
+      `Data de nascimento: ${pedido.nascimento}`,
+      `Hora de nascimento: ${pedido.hora || "não sei a hora"}`,
+      `Cidade/Estado: ${pedido.cidade} - ${pedido.estado}`,
+      `Tipo de leitura: ${pedido.tipo}`,
+      pedido.mensagem ? `Observações: ${pedido.mensagem}` : null,
+    ]
+      .filter((linha) => linha !== null)
+      .join("\n");
+
+    const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagemWhatsapp)}`;
+    setLinkWhatsapp(url);
+    window.open(url, "_blank");
 
     setNome(pedido.nome.split(" ")[0] ?? "");
     setEnviado(true);
@@ -241,9 +265,16 @@ function Index() {
               Recebi seu pedido{nome ? `, ${nome}` : ""}!
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Que alegria ter você por aqui. Vou conferir seus dados com calma e entrar em contato
-              pelo WhatsApp em até 48 horas com os detalhes do pagamento e da agenda. Enquanto isso,
-              respire fundo: o céu já está trabalhando. ✦
+              Abrimos o WhatsApp pra você enviar seu pedido. Se não abriu,{" "}
+              <a
+                href={linkWhatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold underline-offset-4 hover:underline"
+              >
+                toque aqui
+              </a>
+              .
             </p>
             <button
               type="button"
