@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import stars from "@/assets/stars.jpg";
 
+// Mantenha em sincronia com "version" em package.json.
+const SITE_VERSION = "1.1.0";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -434,6 +437,7 @@ function Index() {
         <p className="mt-4 text-xs text-muted-foreground/70">
           Leituras astrológicas feitas à mão · Todos os direitos reservados
         </p>
+        <p className="mt-2 text-[10px] text-muted-foreground/40">v{SITE_VERSION}</p>
       </footer>
     </div>
   );
