@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 import stars from "@/assets/stars.jpg";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.2.0";
+const SITE_VERSION = "1.3.0";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -62,6 +62,13 @@ const servicos = [
     preco: "Valor a definir",
     descricao:
       "A comparação entre dois mapas: encontros, atritos e potenciais da relação. Ideal para casais e também para parcerias de trabalho.",
+    destaque: false,
+  },
+  {
+    nome: "Manifeste Marte",
+    preco: "Valor a definir",
+    descricao:
+      "A cada dois anos, Marte volta à posição exata em que estava quando você nasceu. Esse retorno abre um novo ciclo e mostra qual área da sua vida entra em movimento. Leitura personalizada do seu ciclo de Marte, com os marcos do período.",
     destaque: false,
   },
 ];
@@ -209,7 +216,7 @@ function Index() {
       <section className="mx-auto max-w-5xl px-6 py-16">
         <p className="eyebrow">Serviços</p>
         <h2 className="mt-3 text-3xl sm:text-4xl">Tipos de leitura</h2>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {servicos.map((s) => (
             <article
               key={s.nome}
