@@ -20,7 +20,17 @@ export const Route = createFileRoute("/")({
         content:
           "Leituras de mapa astral interpretadas à mão, uma a uma. Solicite a sua com a astróloga do @exaltavenus.",
       },
+      { property: "og:url", content: "https://exaltavenus.lovable.app/" },
+      { property: "og:image", content: "https://exaltavenus.lovable.app/og-image.jpg" },
+      { name: "twitter:title", content: "exaltavenus | Mapa astral personalizado, feito à mão" },
+      {
+        name: "twitter:description",
+        content:
+          "Leituras de mapa astral interpretadas à mão, uma a uma. Solicite a sua com a astróloga do @exaltavenus.",
+      },
+      { name: "twitter:image", content: "https://exaltavenus.lovable.app/og-image.jpg" },
     ],
+    links: [{ rel: "canonical", href: "https://exaltavenus.lovable.app/" }],
   }),
   component: Index,
 });
@@ -76,9 +86,39 @@ function Index() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const dados = new FormData(e.currentTarget);
-    setNome(String(dados.get("nome") || "").trim().split(" ")[0] ?? "");
+
+    // Honeypot: campo invisível para humanos, mas preenchido por bots simples.
+    if (String(dados.get("empresa") || "").trim() !== "") {
+      return;
+    }
+
+    const pedido = {
+      nome: String(dados.get("nome") || "").trim(),
+      email: String(dados.get("email") || "").trim(),
+      whatsapp: String(dados.get("whatsapp") || "").trim(),
+      nascimento: String(dados.get("nascimento") || "").trim(),
+      hora: horaDesconhecida ? null : String(dados.get("hora") || "").trim(),
+      cidade: String(dados.get("cidade") || "").trim(),
+      estado: String(dados.get("estado") || "").trim(),
+      tipo: String(dados.get("tipo") || "").trim(),
+      mensagem: String(dados.get("mensagem") || "").trim(),
+      enviadoEm: new Date().toISOString(),
+    };
+
+    try {
+      const chave = "exaltavenus_pedidos";
+      const existentes = JSON.parse(localStorage.getItem(chave) || "[]");
+      localStorage.setItem(chave, JSON.stringify([...existentes, pedido]));
+    } catch {
+      // Armazenamento local indisponível (modo privado, etc.): segue o fluxo normalmente.
+    }
+
+    setNome(pedido.nome.split(" ")[0] ?? "");
     setEnviado(true);
-    window.scrollTo({ top: document.getElementById("formulario")?.offsetTop ?? 0, behavior: "smooth" });
+    window.scrollTo({
+      top: document.getElementById("formulario")?.offsetTop ?? 0,
+      behavior: "smooth",
+    });
   }
 
   const inputClass =
@@ -100,12 +140,12 @@ function Index() {
           <span className="text-gradient-gold">exaltavenus</span>
         </h1>
         <p className="mx-auto mt-6 max-w-xl font-display text-xl italic leading-relaxed text-foreground/90 sm:text-2xl">
-          O céu do instante em que você nasceu guarda um mapa. Ler esse mapa é começar a
-          se reconhecer.
+          O céu do instante em que você nasceu guarda um mapa. Ler esse mapa é começar a se
+          reconhecer.
         </p>
         <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Cada leitura é interpretada à mão, uma a uma. Nada de textos automáticos: é o
-          seu mapa, estudado com tempo e atenção.
+          Cada leitura é interpretada à mão, uma a uma. Nada de textos automáticos: é o seu mapa,
+          estudado com tempo e atenção.
         </p>
         <a
           href="#formulario"
@@ -121,15 +161,15 @@ function Index() {
         <h2 className="mt-3 text-3xl sm:text-4xl">Quem lê o seu mapa</h2>
         <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
           <p>
-            [Texto de exemplo — substitua pelo seu.] Sou astróloga e estudo o céu há
-            alguns anos, com formação em astrologia tradicional e contemporânea. Meu
-            trabalho nasce da vontade de traduzir o simbolismo dos astros em algo
-            concreto, que caiba na vida real de quem me procura.
+            [Texto de exemplo — substitua pelo seu.] Sou astróloga e estudo o céu há alguns anos,
+            com formação em astrologia tradicional e contemporânea. Meu trabalho nasce da vontade de
+            traduzir o simbolismo dos astros em algo concreto, que caiba na vida real de quem me
+            procura.
           </p>
           <p>
-            Não trabalho com relatórios prontos nem com interpretações geradas por
-            programas. Cada mapa é calculado, estudado e escrito por mim, respeitando a
-            história de quem está do outro lado. Por isso atendo poucas pessoas por vez.
+            Não trabalho com relatórios prontos nem com interpretações geradas por programas. Cada
+            mapa é calculado, estudado e escrito por mim, respeitando a história de quem está do
+            outro lado. Por isso atendo poucas pessoas por vez.
           </p>
           <p className="text-foreground/80">
             — Astróloga responsável, <span className="text-gold">@exaltavenus</span>
@@ -198,9 +238,9 @@ function Index() {
               Recebi seu pedido{nome ? `, ${nome}` : ""}!
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Que alegria ter você por aqui. Vou conferir seus dados com calma e entrar em
-              contato pelo WhatsApp em até 48 horas com os detalhes do pagamento e da
-              agenda. Enquanto isso, respire fundo: o céu já está trabalhando. ✦
+              Que alegria ter você por aqui. Vou conferir seus dados com calma e entrar em contato
+              pelo WhatsApp em até 48 horas com os detalhes do pagamento e da agenda. Enquanto isso,
+              respire fundo: o céu já está trabalhando. ✦
             </p>
             <button
               type="button"
@@ -212,29 +252,72 @@ function Index() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="panel mt-8 space-y-5 rounded-xl p-6 sm:p-8">
+            <div className="absolute -left-[9999px]" aria-hidden="true">
+              <label htmlFor="empresa">Empresa</label>
+              <input id="empresa" name="empresa" type="text" tabIndex={-1} autoComplete="off" />
+            </div>
+
             <div>
-              <label className={labelClass} htmlFor="nome">Nome completo</label>
-              <input id="nome" name="nome" required maxLength={120} className={inputClass} placeholder="Como está no documento" />
+              <label className={labelClass} htmlFor="nome">
+                Nome completo
+              </label>
+              <input
+                id="nome"
+                name="nome"
+                required
+                maxLength={120}
+                className={inputClass}
+                placeholder="Como está no documento"
+              />
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
-                <label className={labelClass} htmlFor="email">E-mail</label>
-                <input id="email" name="email" type="email" required maxLength={160} className={inputClass} placeholder="voce@email.com" />
+                <label className={labelClass} htmlFor="email">
+                  E-mail
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  maxLength={160}
+                  className={inputClass}
+                  placeholder="voce@email.com"
+                />
               </div>
               <div>
-                <label className={labelClass} htmlFor="whatsapp">WhatsApp</label>
-                <input id="whatsapp" name="whatsapp" required maxLength={25} className={inputClass} placeholder="(11) 90000-0000" />
+                <label className={labelClass} htmlFor="whatsapp">
+                  WhatsApp
+                </label>
+                <input
+                  id="whatsapp"
+                  name="whatsapp"
+                  required
+                  maxLength={25}
+                  className={inputClass}
+                  placeholder="(11) 90000-0000"
+                />
               </div>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
-                <label className={labelClass} htmlFor="nascimento">Data de nascimento</label>
-                <input id="nascimento" name="nascimento" type="date" required className={inputClass} />
+                <label className={labelClass} htmlFor="nascimento">
+                  Data de nascimento
+                </label>
+                <input
+                  id="nascimento"
+                  name="nascimento"
+                  type="date"
+                  required
+                  className={inputClass}
+                />
               </div>
               <div>
-                <label className={labelClass} htmlFor="hora">Hora exata de nascimento</label>
+                <label className={labelClass} htmlFor="hora">
+                  Hora exata de nascimento
+                </label>
                 <input
                   id="hora"
                   name="hora"
@@ -257,37 +340,74 @@ function Index() {
               Não sei a hora exata do meu nascimento
             </label>
             <p className="rounded-md border border-gold/25 bg-secondary/40 p-3 text-xs leading-relaxed text-muted-foreground">
-              ✦ A hora exata é essencial para a precisão do mapa: ela define o Ascendente e
-              as casas. Você encontra esse dado na certidão de nascimento ou na declaração
-              de nascido vivo do hospital. Se não souber, seguimos com uma leitura adaptada.
+              ✦ A hora exata é essencial para a precisão do mapa: ela define o Ascendente e as
+              casas. Você encontra esse dado na certidão de nascimento ou na declaração de nascido
+              vivo do hospital. Se não souber, seguimos com uma leitura adaptada.
             </p>
 
             <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_120px]">
               <div className="min-w-0">
-                <label className={labelClass} htmlFor="cidade">Cidade de nascimento</label>
-                <input id="cidade" name="cidade" required maxLength={80} className={inputClass} placeholder="São Paulo" />
+                <label className={labelClass} htmlFor="cidade">
+                  Cidade de nascimento
+                </label>
+                <input
+                  id="cidade"
+                  name="cidade"
+                  required
+                  maxLength={80}
+                  className={inputClass}
+                  placeholder="São Paulo"
+                />
               </div>
               <div>
-                <label className={labelClass} htmlFor="estado">Estado</label>
-                <input id="estado" name="estado" required maxLength={40} className={inputClass} placeholder="SP" />
+                <label className={labelClass} htmlFor="estado">
+                  Estado
+                </label>
+                <input
+                  id="estado"
+                  name="estado"
+                  required
+                  maxLength={40}
+                  className={inputClass}
+                  placeholder="SP"
+                />
               </div>
             </div>
 
             <div>
-              <label className={labelClass} htmlFor="tipo">Tipo de leitura desejada</label>
-              <select id="tipo" name="tipo" required defaultValue="Mapa Astral Completo" className={inputClass}>
+              <label className={labelClass} htmlFor="tipo">
+                Tipo de leitura desejada
+              </label>
+              <select
+                id="tipo"
+                name="tipo"
+                required
+                defaultValue="Mapa Astral Completo"
+                className={inputClass}
+              >
                 {servicos.map((s) => (
                   <option key={s.nome} value={s.nome} className="bg-card">
                     {s.nome}
                   </option>
                 ))}
-                <option value="Ainda não sei" className="bg-card">Ainda não sei</option>
+                <option value="Ainda não sei" className="bg-card">
+                  Ainda não sei
+                </option>
               </select>
             </div>
 
             <div>
-              <label className={labelClass} htmlFor="mensagem">O que você busca nesta leitura?</label>
-              <textarea id="mensagem" name="mensagem" rows={4} maxLength={1000} className={inputClass} placeholder="Conte um pouco do seu momento, dúvidas ou temas que gostaria de olhar com mais cuidado." />
+              <label className={labelClass} htmlFor="mensagem">
+                O que você busca nesta leitura?
+              </label>
+              <textarea
+                id="mensagem"
+                name="mensagem"
+                rows={4}
+                maxLength={1000}
+                className={inputClass}
+                placeholder="Conte um pouco do seu momento, dúvidas ou temas que gostaria de olhar com mais cuidado."
+              />
             </div>
 
             <button
