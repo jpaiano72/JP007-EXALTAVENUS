@@ -154,6 +154,7 @@ function Index() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
+      <p className="absolute left-3 top-3 text-[10px] text-muted-foreground/40">v{SITE_VERSION}</p>
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-40"
@@ -468,7 +469,6 @@ function Index() {
         <p className="mt-4 text-xs text-muted-foreground/70">
           Leituras astrológicas feitas à mão · Todos os direitos reservados
         </p>
-        <p className="mt-2 text-[10px] text-muted-foreground/40">v{SITE_VERSION}</p>
       </footer>
     </div>
   );
