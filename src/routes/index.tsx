@@ -323,11 +323,11 @@ function Index() {
                 <option value="" disabled className="bg-card">
                   Selecione
                 </option>
-                <option value="Masculino" className="bg-card">
-                  Masculino
+                <option value="Masculina" className="bg-card">
+                  Masculina
                 </option>
-                <option value="Feminino" className="bg-card">
-                  Feminino
+                <option value="Feminina" className="bg-card">
+                  Feminina
                 </option>
               </select>
             </div>
