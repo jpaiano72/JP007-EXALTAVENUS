@@ -44,6 +44,13 @@ export const Route = createFileRoute("/")({
 
 const servicos = [
   {
+    nome: "Manifeste Marte",
+    preco: "Valor a definir",
+    descricao:
+      "A cada dois anos, Marte volta à posição exata em que estava quando você nasceu. Esse retorno abre um novo ciclo e mostra qual área da sua vida entra em movimento. Leitura personalizada do seu ciclo de Marte, com os marcos do período.",
+    destaque: true,
+  },
+  {
     nome: "Mapa Astral Completo",
     preco: "R$ 300",
     descricao:
@@ -63,13 +70,6 @@ const servicos = [
     descricao:
       "A comparação entre dois mapas: encontros, atritos e potenciais da relação. Ideal para casais e também para parcerias de trabalho.",
     destaque: false,
-  },
-  {
-    nome: "Manifeste Marte",
-    preco: "Valor a definir",
-    descricao:
-      "A cada dois anos, Marte volta à posição exata em que estava quando você nasceu. Esse retorno abre um novo ciclo e mostra qual área da sua vida entra em movimento. Leitura personalizada do seu ciclo de Marte, com os marcos do período.",
-    destaque: true,
   },
 ];
 
