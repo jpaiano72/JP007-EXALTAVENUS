@@ -109,6 +109,7 @@ function Index() {
 
     const pedido = {
       nome: String(dados.get("nome") || "").trim(),
+      genero: String(dados.get("genero") || "").trim(),
       email: String(dados.get("email") || "").trim(),
       whatsapp: String(dados.get("whatsapp") || "").trim(),
       nascimento: String(dados.get("nascimento") || "").trim(),
@@ -132,6 +133,7 @@ function Index() {
       "Olá! Vim pelo site e quero meu mapa astral.",
       "",
       `Nome: ${pedido.nome}`,
+      `Gênero: ${pedido.genero}`,
       `E-mail: ${pedido.email}`,
       `WhatsApp: ${pedido.whatsapp}`,
       `Data de nascimento: ${pedido.nascimento}`,
@@ -311,6 +313,23 @@ function Index() {
                 className={inputClass}
                 placeholder="Como está no documento"
               />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="genero">
+                Gênero
+              </label>
+              <select id="genero" name="genero" required defaultValue="" className={inputClass}>
+                <option value="" disabled className="bg-card">
+                  Selecione
+                </option>
+                <option value="Masculina" className="bg-card">
+                  Masculina
+                </option>
+                <option value="Feminina" className="bg-card">
+                  Feminina
+                </option>
+              </select>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
