@@ -48,7 +48,7 @@ const servicos = [
     preco: "R$ 300",
     descricao:
       "Leitura completa do seu mapa natal: Sol, Lua, Ascendente, casas, planetas e aspectos. Você recebe o material interpretado à mão e uma consulta ao vivo para conversarmos sobre ele.",
-    destaque: true,
+    destaque: false,
   },
   {
     nome: "Revolução Solar",
@@ -69,7 +69,7 @@ const servicos = [
     preco: "Valor a definir",
     descricao:
       "A cada dois anos, Marte volta à posição exata em que estava quando você nasceu. Esse retorno abre um novo ciclo e mostra qual área da sua vida entra em movimento. Leitura personalizada do seu ciclo de Marte, com os marcos do período.",
-    destaque: false,
+    destaque: true,
   },
 ];
 
