@@ -44,7 +44,7 @@ export const Route = createFileRoute("/")({
 
 const servicos = [
   {
-    nome: "Manifeste Marte",
+    nome: "Caminho de Marte",
     preco: "Valor a definir",
     descricao:
       "A cada dois anos, Marte volta à posição exata em que estava quando você nasceu. Esse retorno abre um novo ciclo e mostra qual área da sua vida entra em movimento. Leitura personalizada do seu ciclo de Marte, com os marcos do período.",
