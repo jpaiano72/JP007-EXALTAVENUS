@@ -11,6 +11,7 @@ const pedidoSchema = z.object({
   whatsapp: z.string().min(1).max(25),
   nascimento: z.string().min(1),
   hora: z.string().nullable(),
+  horaDesconhecida: z.boolean().optional().default(false),
   cidade: z.string().min(1).max(80),
   estado: z.string().min(1).max(40),
   tipo: z.string().min(1).max(80),
