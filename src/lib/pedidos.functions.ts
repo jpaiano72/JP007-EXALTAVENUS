@@ -29,6 +29,7 @@ export const registrarPedido = createServerFn({ method: "POST" })
       whatsapp: data.whatsapp,
       nascimento: data.nascimento,
       hora: data.hora,
+      hora_desconhecida: data.horaDesconhecida,
       cidade: data.cidade,
       estado: data.estado,
       tipo: data.tipo,
