@@ -4,7 +4,7 @@ import stars from "@/assets/stars.jpg";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.3.4";
+const SITE_VERSION = "1.3.5";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -195,7 +195,7 @@ function Index() {
       />
 
       {/* Hero */}
-      <header className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-6 py-16 text-center sm:min-h-[80vh] sm:py-20">
+      <header className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-6 py-16 text-center">
         <p className="eyebrow">Astrologia · leituras autorais</p>
         <h1 className="mt-6 text-5xl leading-[1.05] sm:text-7xl">
           <span className="text-gradient-gold">exaltavenus</span>
