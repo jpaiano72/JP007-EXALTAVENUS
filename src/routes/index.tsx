@@ -4,7 +4,7 @@ import stars from "@/assets/stars.jpg";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.3.0";
+const SITE_VERSION = "1.3.1";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -98,6 +98,8 @@ function Index() {
   const [horaDesconhecida, setHoraDesconhecida] = useState(false);
   const [nome, setNome] = useState("");
   const [linkWhatsapp, setLinkWhatsapp] = useState("");
+  const [registroFalhou, setRegistroFalhou] = useState(false);
+  const [erroEnvio, setErroEnvio] = useState(false);
   const enviandoRef = useRef(false);
   const [enviando, setEnviando] = useState(false);
 
@@ -115,6 +117,10 @@ function Index() {
     if (enviandoRef.current) return;
     enviandoRef.current = true;
     setEnviando(true);
+    setRegistroFalhou(false);
+    setErroEnvio(false);
+
+    const janelaWhatsapp = window.open("", "_blank");
 
     try {
       const pedido = {
@@ -135,15 +141,7 @@ function Index() {
       try {
         await registrarPedido({ data: pedido });
       } catch {
-        // Falha ao gravar no banco: o fluxo do WhatsApp segue normalmente.
-      }
-
-      try {
-        const chave = "exaltavenus_pedidos";
-        const existentes = JSON.parse(localStorage.getItem(chave) || "[]");
-        localStorage.setItem(chave, JSON.stringify([...existentes, pedido]));
-      } catch {
-        // Armazenamento local indisponível (modo privado, etc.): segue o fluxo normalmente.
+        setRegistroFalhou(true);
       }
 
       const mensagemWhatsapp = [
@@ -164,7 +162,9 @@ function Index() {
 
       const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagemWhatsapp)}`;
       setLinkWhatsapp(url);
-      window.open(url, "_blank");
+      if (janelaWhatsapp) {
+        janelaWhatsapp.location.href = url;
+      }
 
       setNome(pedido.nome.split(" ")[0] ?? "");
       setEnviado(true);
@@ -172,6 +172,9 @@ function Index() {
         top: document.getElementById("formulario")?.offsetTop ?? 0,
         behavior: "smooth",
       });
+    } catch {
+      janelaWhatsapp?.close();
+      setErroEnvio(true);
     } finally {
       enviandoRef.current = false;
       setEnviando(false);
@@ -291,21 +294,28 @@ function Index() {
         <h2 className="mt-3 text-3xl sm:text-4xl">Peça sua leitura</h2>
 
         {enviado ? (
-          <div className="panel mt-8 rounded-xl p-8 text-center">
+          <div className="panel mt-8 rounded-xl p-8 text-center" role="status" aria-live="polite">
             <p className="font-display text-3xl text-gold">
               Recebi seu pedido{nome ? `, ${nome}` : ""}!
             </p>
+            {registroFalhou && (
+              <p className="mt-4 text-sm leading-relaxed text-gold-soft">
+                O pedido foi preparado, mas não consegui confirmar o registro. Envie a mensagem
+                pelo WhatsApp para garantir o atendimento.
+              </p>
+            )}
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Abrimos o WhatsApp pra você enviar seu pedido. Se não abriu,{" "}
-              <a
-                href={linkWhatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gold underline-offset-4 hover:underline"
-              >
-                toque aqui
-              </a>
-              .
+              {linkWhatsapp ? "Abrimos o WhatsApp para você enviar seu pedido. Se não abriu, " : ""}
+              {linkWhatsapp && (
+                <a
+                  href={linkWhatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gold underline-offset-4 hover:underline"
+                >
+                  toque aqui
+                </a>
+              )}
             </p>
             <button
               type="button"
@@ -317,6 +327,15 @@ function Index() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="panel mt-8 space-y-5 rounded-xl p-6 sm:p-8">
+            {erroEnvio && (
+              <p
+                className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive-foreground"
+                role="alert"
+              >
+                Não foi possível preparar seu pedido. Confira os dados e tente novamente.
+              </p>
+            )}
+
             <div className="absolute -left-[9999px]" aria-hidden="true">
               <label htmlFor="empresa">Empresa</label>
               <input id="empresa" name="empresa" type="text" tabIndex={-1} autoComplete="off" />
@@ -338,11 +357,22 @@ function Index() {
 
             <div>
               <label className={labelClass} htmlFor="genero">
-                Gênero
+                Gênero (opcional)
               </label>
-              <select id="genero" name="genero" required defaultValue="" className={inputClass}>
-                <option value="" disabled className="bg-card">
-                  Selecione
+              <select
+                id="genero"
+                name="genero"
+                defaultValue="Prefiro não informar"
+                className={inputClass}
+              >
+                <option value="Prefiro não informar" className="bg-card">
+                  Prefiro não informar
+                </option>
+                <option value="Não binário" className="bg-card">
+                  Não binário
+                </option>
+                <option value="Outro" className="bg-card">
+                  Outro
                 </option>
                 <option value="Masculino" className="bg-card">
                   Masculino
@@ -353,21 +383,31 @@ function Index() {
               </select>
             </div>
 
+            <p
+              id="dados-aviso"
+              className="rounded-md border border-gold/25 bg-secondary/40 p-3 text-xs leading-relaxed text-muted-foreground"
+            >
+              Usaremos seus dados de nascimento e contato apenas para preparar sua leitura e falar
+              com você sobre o pedido. Ao continuar, eles serão enviados ao WhatsApp informado.
+            </p>
+
+            <div>
+              <label className={labelClass} htmlFor="email">
+                E-mail
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                maxLength={160}
+                className={inputClass}
+                placeholder="voce@email.com"
+                aria-describedby="dados-aviso"
+              />
+            </div>
+
             <div className="grid gap-5 sm:grid-cols-2">
-              <div>
-                <label className={labelClass} htmlFor="email">
-                  E-mail
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  maxLength={160}
-                  className={inputClass}
-                  placeholder="voce@email.com"
-                />
-              </div>
               <div>
                 <label className={labelClass} htmlFor="whatsapp">
                   WhatsApp
@@ -379,6 +419,7 @@ function Index() {
                   maxLength={25}
                   className={inputClass}
                   placeholder="(11) 90000-0000"
+                  aria-describedby="dados-aviso"
                 />
               </div>
             </div>

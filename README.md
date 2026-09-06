@@ -1,20 +1,21 @@
-# Exalta Venus: Seu Guia Astral
+# Exalta Venus: Leituras Astrológicas
 
-Crie uma landing page de página única em português do Brasil para uma astróloga que vende leituras de mapa astral personalizadas, feitas à mão por ela (não são geradas automaticamente).
+Landing page em português do Brasil para a marca `exaltavenus`, que oferece leituras
+astrológicas personalizadas e interpretadas manualmente. A página capta pedidos pelo
+formulário e encaminha a pessoa para o WhatsApp da astróloga.
 
-Marca: exaltavenus (do Instagram @exaltavenus)
+## Experiência atual
 
-Estrutura da página:
-1. Hero: nome da marca "exaltavenus", uma frase de impacto sobre autoconhecimento através do mapa astral, e um botão "Quero meu mapa" que rola até o formulário.
-2. Sobre: espaço para apresentação da astróloga, falando da experiência e do estudo dela em astrologia. Use texto de exemplo que ela possa substituir depois.
-3. Serviços: cards com os tipos de leitura. Comece com "Mapa Astral Completo" a R$ 300, e deixe mais dois cards de exemplo (ex: "Revolução Solar" e "Sinastria / Mapa do Casal") com preços a definir. Cada card com uma descrição curta do que a pessoa recebe.
-4. Como funciona: 3 ou 4 passos simples (preenche o formulário, confirma o pagamento, ela faz a leitura à mão, você recebe o material e a consulta).
-5. Formulário de solicitação: nome completo, e-mail, WhatsApp, data de nascimento, hora exata de nascimento (com um aviso de que a hora exata é essencial para a precisão do mapa, e uma opção "não sei a hora"), cidade e estado de nascimento, tipo de leitura desejada, e um campo livre para a pessoa contar o que busca. Ao enviar, mostre uma mensagem de confirmação amigável.
-6. Rodapé: link para o Instagram https://instagram.com/exaltavenus e o nome da marca.
+- Hero com proposta de autoconhecimento e CTA para solicitar uma leitura.
+- Seção Sobre com a abordagem autoral da astróloga.
+- Serviços: Caminho de Marte, Mapa Astral Completo, Revolução Solar e Sinastria.
+- Processo em quatro etapas, do formulário à entrega do material e consulta.
+- Formulário com dados de nascimento, contato, tipo de leitura e contexto do pedido.
+- Registro do pedido por server function no Supabase e encaminhamento para o WhatsApp.
+- Layout responsivo com estética azul-noite, dourado suave e tipografia serifada.
 
-Estética: elegante e místico, mas sofisticado, nada de clichê exagerado. Fundo escuro (azul-noite bem profundo), tipografia serifada elegante para os títulos, detalhes em dourado suave. Pode usar elementos sutis de constelações ou símbolos astrológicos como textura de fundo, bem discretos. Totalmente responsivo, com prioridade para celular, já que o tráfego vai vir do Instagram.
-
-Comece simples e funcional. O formulário pode salvar em estado local por enquanto, sem banco de dados.
+O conteúdo comercial que ainda depende de definição é a biografia final, os preços dos
+serviços marcados como “Valor a definir”, o domínio de produção e a política de privacidade.
 
 This project was built with [Lovable](https://lovable.dev).
 
