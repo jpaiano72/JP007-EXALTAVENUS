@@ -4,7 +4,7 @@ import stars from "@/assets/stars.jpg";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.3.1";
+const SITE_VERSION = "1.3.2";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -217,7 +217,7 @@ function Index() {
       </header>
 
       {/* Sobre */}
-      <section className="mx-auto max-w-3xl px-6 py-20">
+      <section className="mx-auto max-w-3xl px-6 py-16">
         <p className="eyebrow">Sobre</p>
         <h2 className="mt-3 text-3xl sm:text-4xl">Quem lê o seu mapa</h2>
         <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
