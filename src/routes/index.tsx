@@ -4,7 +4,7 @@ import stars from "@/assets/stars.jpg";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.3.2";
+const SITE_VERSION = "1.3.3";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -208,12 +208,6 @@ function Index() {
           Cada leitura é interpretada à mão, uma a uma. Nada de textos automáticos: é o seu mapa,
           estudado com tempo e atenção.
         </p>
-        <a
-          href="#formulario"
-          className="mt-10 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-gold-soft to-gold px-9 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.03]"
-        >
-          Quero meu mapa
-        </a>
       </header>
 
       {/* Sobre */}
@@ -269,6 +263,12 @@ function Index() {
             </article>
           ))}
         </div>
+        <a
+          href="#formulario"
+          className="mx-auto mt-10 flex w-fit items-center justify-center rounded-full bg-gradient-to-r from-gold-soft to-gold px-9 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.03]"
+        >
+          Quero meu mapa
+        </a>
       </section>
 
       {/* Como funciona */}
