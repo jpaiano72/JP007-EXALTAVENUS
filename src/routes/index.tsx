@@ -4,7 +4,7 @@ import stars from "@/assets/stars.jpg";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.3.5";
+const SITE_VERSION = "1.3.6";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -80,16 +80,16 @@ const passos = [
     texto: "Envie seus dados de nascimento e conte o que você busca nesta leitura.",
   },
   {
-    titulo: "Confirme o pagamento",
-    texto: "Entro em contato pelo WhatsApp com as formas de pagamento e agendamos a consulta.",
+    titulo: "Converse comigo e alinhe a leitura",
+    texto: "Entro em contato pelo WhatsApp para entender o que você busca e combinar os próximos passos.",
   },
   {
-    titulo: "Faço sua leitura à mão",
+    titulo: "Receba sua leitura personalizada",
     texto: "Nada é gerado automaticamente: eu estudo o seu mapa e escrevo a interpretação.",
   },
   {
-    titulo: "Você recebe o material",
-    texto: "Envio o material completo e conversamos ao vivo para tirar todas as dúvidas.",
+    titulo: "Faça o pagamento e receba o material",
+    texto: "Após a leitura, você realiza o pagamento e recebe o material completo para consultar com calma.",
   },
 ];
 
