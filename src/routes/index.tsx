@@ -4,7 +4,7 @@ import stars from "@/assets/stars.jpg";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.3.6";
+const SITE_VERSION = "1.3.7";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -130,6 +130,7 @@ function Index() {
         whatsapp: String(dados.get("whatsapp") || "").trim(),
         nascimento: String(dados.get("nascimento") || "").trim(),
         hora: horaDesconhecida ? null : String(dados.get("hora") || "").trim(),
+        horaDesconhecida,
         cidade: String(dados.get("cidade") || "").trim(),
         estado: String(dados.get("estado") || "").trim(),
         tipo: String(dados.get("tipo") || "").trim(),

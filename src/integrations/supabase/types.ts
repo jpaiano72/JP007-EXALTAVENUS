@@ -23,6 +23,7 @@ export type Database = {
           estado: string
           genero: string | null
           hora: string | null
+          hora_desconhecida: boolean
           id: string
           mensagem: string | null
           nascimento: string
@@ -38,6 +39,7 @@ export type Database = {
           estado: string
           genero?: string | null
           hora?: string | null
+          hora_desconhecida?: boolean
           id?: string
           mensagem?: string | null
           nascimento: string
@@ -53,6 +55,7 @@ export type Database = {
           estado?: string
           genero?: string | null
           hora?: string | null
+          hora_desconhecida?: boolean
           id?: string
           mensagem?: string | null
           nascimento?: string
