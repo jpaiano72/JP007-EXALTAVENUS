@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import stars from "@/assets/stars.jpg";
+import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
 const SITE_VERSION = "1.3.0";
@@ -97,8 +98,10 @@ function Index() {
   const [horaDesconhecida, setHoraDesconhecida] = useState(false);
   const [nome, setNome] = useState("");
   const [linkWhatsapp, setLinkWhatsapp] = useState("");
+  const enviandoRef = useRef(false);
+  const [enviando, setEnviando] = useState(false);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const dados = new FormData(e.currentTarget);
 
@@ -107,54 +110,72 @@ function Index() {
       return;
     }
 
-    const pedido = {
-      nome: String(dados.get("nome") || "").trim(),
-      genero: String(dados.get("genero") || "").trim(),
-      email: String(dados.get("email") || "").trim(),
-      whatsapp: String(dados.get("whatsapp") || "").trim(),
-      nascimento: String(dados.get("nascimento") || "").trim(),
-      hora: horaDesconhecida ? null : String(dados.get("hora") || "").trim(),
-      cidade: String(dados.get("cidade") || "").trim(),
-      estado: String(dados.get("estado") || "").trim(),
-      tipo: String(dados.get("tipo") || "").trim(),
-      mensagem: String(dados.get("mensagem") || "").trim(),
-      enviadoEm: new Date().toISOString(),
-    };
+    // Trava de submissão: o ref bloqueia um segundo disparo no mesmo tick,
+    // caso em que o setState assíncrono ainda não teria atualizado `enviando`.
+    if (enviandoRef.current) return;
+    enviandoRef.current = true;
+    setEnviando(true);
 
     try {
-      const chave = "exaltavenus_pedidos";
-      const existentes = JSON.parse(localStorage.getItem(chave) || "[]");
-      localStorage.setItem(chave, JSON.stringify([...existentes, pedido]));
-    } catch {
-      // Armazenamento local indisponível (modo privado, etc.): segue o fluxo normalmente.
+      const pedido = {
+        nome: String(dados.get("nome") || "").trim(),
+        genero: String(dados.get("genero") || "").trim(),
+        email: String(dados.get("email") || "").trim(),
+        whatsapp: String(dados.get("whatsapp") || "").trim(),
+        nascimento: String(dados.get("nascimento") || "").trim(),
+        hora: horaDesconhecida ? null : String(dados.get("hora") || "").trim(),
+        cidade: String(dados.get("cidade") || "").trim(),
+        estado: String(dados.get("estado") || "").trim(),
+        tipo: String(dados.get("tipo") || "").trim(),
+        mensagem: String(dados.get("mensagem") || "").trim(),
+        enviadoEm: new Date().toISOString(),
+      };
+
+      // Salva no banco (Lovable Cloud) para ter um registro confiável do pedido.
+      try {
+        await registrarPedido({ data: pedido });
+      } catch {
+        // Falha ao gravar no banco: o fluxo do WhatsApp segue normalmente.
+      }
+
+      try {
+        const chave = "exaltavenus_pedidos";
+        const existentes = JSON.parse(localStorage.getItem(chave) || "[]");
+        localStorage.setItem(chave, JSON.stringify([...existentes, pedido]));
+      } catch {
+        // Armazenamento local indisponível (modo privado, etc.): segue o fluxo normalmente.
+      }
+
+      const mensagemWhatsapp = [
+        "Olá! Vim pelo site e quero meu mapa astral.",
+        "",
+        `Nome: ${pedido.nome}`,
+        `Gênero: ${pedido.genero}`,
+        `E-mail: ${pedido.email}`,
+        `WhatsApp: ${pedido.whatsapp}`,
+        `Data de nascimento: ${pedido.nascimento}`,
+        `Hora de nascimento: ${pedido.hora || "não sei a hora"}`,
+        `Cidade/Estado: ${pedido.cidade} - ${pedido.estado}`,
+        `Tipo de leitura: ${pedido.tipo}`,
+        pedido.mensagem ? `Observações: ${pedido.mensagem}` : null,
+      ]
+        .filter((linha) => linha !== null)
+        .join("\n");
+
+      const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagemWhatsapp)}`;
+      setLinkWhatsapp(url);
+      window.open(url, "_blank");
+
+      setNome(pedido.nome.split(" ")[0] ?? "");
+      setEnviado(true);
+      window.scrollTo({
+        top: document.getElementById("formulario")?.offsetTop ?? 0,
+        behavior: "smooth",
+      });
+    } finally {
+      enviandoRef.current = false;
+      setEnviando(false);
     }
-
-    const mensagemWhatsapp = [
-      "Olá! Vim pelo site e quero meu mapa astral.",
-      "",
-      `Nome: ${pedido.nome}`,
-      `Gênero: ${pedido.genero}`,
-      `E-mail: ${pedido.email}`,
-      `WhatsApp: ${pedido.whatsapp}`,
-      `Data de nascimento: ${pedido.nascimento}`,
-      `Hora de nascimento: ${pedido.hora || "não sei a hora"}`,
-      `Cidade/Estado: ${pedido.cidade} - ${pedido.estado}`,
-      `Tipo de leitura: ${pedido.tipo}`,
-      pedido.mensagem ? `Observações: ${pedido.mensagem}` : null,
-    ]
-      .filter((linha) => linha !== null)
-      .join("\n");
-
-    const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagemWhatsapp)}`;
-    setLinkWhatsapp(url);
-    window.open(url, "_blank");
-
-    setNome(pedido.nome.split(" ")[0] ?? "");
-    setEnviado(true);
-    window.scrollTo({
-      top: document.getElementById("formulario")?.offsetTop ?? 0,
-      behavior: "smooth",
-    });
   }
 
   const inputClass =
@@ -473,7 +494,8 @@ function Index() {
 
             <button
               type="submit"
-              className="w-full rounded-full bg-gradient-to-r from-gold-soft to-gold px-8 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.01]"
+              disabled={enviando}
+              className="w-full rounded-full bg-gradient-to-r from-gold-soft to-gold px-8 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
             >
               Enviar solicitação
             </button>
