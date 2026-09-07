@@ -74,9 +74,17 @@ export const pedidoSchema = z.object({
 
 export type PedidoInput = z.input<typeof pedidoSchema>;
 
-// Retorna a lista de mensagens de erro (vazia quando tudo está certo).
-export function validarPedido(valor: unknown): string[] {
+export type ErroValidacao = {
+  campo: string | null;
+  mensagem: string;
+};
+
+// Retorna os campos e mensagens inválidos para orientar o formulário.
+export function validarPedido(valor: unknown): ErroValidacao[] {
   const resultado = pedidoSchema.safeParse(valor);
   if (resultado.success) return [];
-  return resultado.error.issues.map((issue) => issue.message);
+  return resultado.error.issues.map((issue) => ({
+    campo: typeof issue.path[0] === "string" ? issue.path[0] : null,
+    mensagem: issue.message,
+  }));
 }

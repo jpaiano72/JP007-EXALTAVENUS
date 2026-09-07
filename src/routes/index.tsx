@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import stars from "@/assets/stars.jpg";
-import { UFS, validarPedido } from "@/lib/pedido-schema";
+import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.2";
+const SITE_VERSION = "1.4.3";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -101,9 +101,22 @@ function Index() {
   const [linkWhatsapp, setLinkWhatsapp] = useState("");
   const [registroFalhou, setRegistroFalhou] = useState(false);
   const [erroEnvio, setErroEnvio] = useState(false);
-  const [errosValidacao, setErrosValidacao] = useState<string[]>([]);
+  const [errosValidacao, setErrosValidacao] = useState<ErroValidacao[]>([]);
   const enviandoRef = useRef(false);
   const [enviando, setEnviando] = useState(false);
+
+  useEffect(() => {
+    const primeiroCampo = errosValidacao.find((erro) => erro.campo)?.campo;
+    if (!primeiroCampo) return;
+
+    const campo = document.getElementById(primeiroCampo);
+    if (!(campo instanceof HTMLElement)) return;
+
+    requestAnimationFrame(() => {
+      campo.scrollIntoView({ behavior: "smooth", block: "center" });
+      campo.focus({ preventScroll: true });
+    });
+  }, [errosValidacao]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -203,6 +216,8 @@ function Index() {
   const inputClass =
     "w-full rounded-md border border-input bg-secondary/50 px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-gold focus:ring-1 focus:ring-ring";
   const labelClass = "mb-1.5 block text-xs uppercase tracking-[0.18em] text-muted-foreground";
+  const campoComErro = (campo: string) =>
+    errosValidacao.some((erro) => erro.campo === campo);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
@@ -357,20 +372,6 @@ function Index() {
               </p>
             )}
 
-            {errosValidacao.length > 0 && (
-              <div
-                className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive-foreground"
-                role="alert"
-              >
-                <p>Confira estes pontos antes de enviar:</p>
-                <ul className="mt-2 list-disc space-y-1 pl-5">
-                  {errosValidacao.map((erro) => (
-                    <li key={erro}>{erro}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
             <div className="absolute -left-[9999px]" aria-hidden="true">
               <label htmlFor="empresa">Empresa</label>
               <input id="empresa" name="empresa" type="text" tabIndex={-1} autoComplete="off" />
@@ -388,6 +389,7 @@ function Index() {
                 maxLength={120}
                 className={inputClass}
                 placeholder="Como está no documento"
+                aria-invalid={campoComErro("nome")}
               />
             </div>
 
@@ -400,6 +402,7 @@ function Index() {
                 name="genero"
                 defaultValue="Prefiro não informar"
                 className={inputClass}
+                aria-invalid={campoComErro("genero")}
               >
                 <option value="Prefiro não informar" className="bg-card">
                   Prefiro não informar
@@ -447,6 +450,7 @@ function Index() {
                 className={inputClass}
                 placeholder="voce@email.com"
                 aria-describedby="dados-aviso"
+                aria-invalid={campoComErro("email")}
               />
             </div>
 
@@ -463,6 +467,7 @@ function Index() {
                   className={inputClass}
                   placeholder="(11) 90000-0000"
                   aria-describedby="dados-aviso"
+                  aria-invalid={campoComErro("whatsapp")}
                 />
               </div>
             </div>
@@ -478,6 +483,7 @@ function Index() {
                   type="date"
                   required
                   className={inputClass}
+                  aria-invalid={campoComErro("nascimento")}
                 />
               </div>
               <div>
@@ -491,6 +497,7 @@ function Index() {
                   required={!horaDesconhecida}
                   disabled={horaDesconhecida}
                   className={`${inputClass} disabled:opacity-40`}
+                  aria-invalid={campoComErro("hora")}
                 />
               </div>
             </div>
@@ -524,13 +531,21 @@ function Index() {
                   maxLength={80}
                   className={inputClass}
                   placeholder="São Paulo"
+                  aria-invalid={campoComErro("cidade")}
                 />
               </div>
               <div>
                 <label className={labelClass} htmlFor="estado">
                   Estado
                 </label>
-                <select id="estado" name="estado" required defaultValue="" className={inputClass}>
+                <select
+                  id="estado"
+                  name="estado"
+                  required
+                  defaultValue=""
+                  className={inputClass}
+                  aria-invalid={campoComErro("estado")}
+                >
                   <option value="" disabled className="bg-card">
                     UF
                   </option>
@@ -553,6 +568,7 @@ function Index() {
                 required
                 defaultValue="Mapa Astral Completo"
                 className={inputClass}
+                aria-invalid={campoComErro("tipo")}
               >
                 {servicos.map((s) => (
                   <option key={s.nome} value={s.nome} className="bg-card">
@@ -576,6 +592,7 @@ function Index() {
                 maxLength={1000}
                 className={inputClass}
                 placeholder="Conte um pouco do seu momento, dúvidas ou temas que gostaria de olhar com mais cuidado."
+                aria-invalid={campoComErro("mensagem")}
               />
             </div>
 
@@ -594,6 +611,20 @@ function Index() {
                 .
               </span>
             </label>
+
+            {errosValidacao.length > 0 && (
+              <div
+                className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive-foreground"
+                role="alert"
+              >
+                <p>Confira estes pontos antes de enviar:</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  {errosValidacao.map((erro, index) => (
+                    <li key={`${erro.campo ?? "form"}-${index}`}>{erro.mensagem}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <button
               type="submit"
