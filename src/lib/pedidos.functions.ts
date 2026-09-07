@@ -23,9 +23,8 @@ export const registrarPedido = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Tenta inserir e retorna a linha criada para diagnóstico. Loga o erro completo
-    // no servidor para facilitar a investigação sem expor detalhes ao cliente.
-    const { data: inserted, error } = await supabaseAdmin
+    // Mantém os dados no servidor e retorna apenas o status da operação ao cliente.
+    const { error } = await supabaseAdmin
       .from("pedidos")
       .insert({
         nome: data.nome,
@@ -39,8 +38,7 @@ export const registrarPedido = createServerFn({ method: "POST" })
         estado: data.estado,
         tipo: data.tipo,
         mensagem: data.mensagem,
-      })
-      .select();
+      });
 
     if (error) {
       // Loga o objeto de erro completo para debugar (não retorna detalhes ao cliente).
@@ -48,5 +46,5 @@ export const registrarPedido = createServerFn({ method: "POST" })
       throw new Error("Não foi possível registrar o pedido.");
     }
 
-    return { ok: true, pedido: inserted?.[0] ?? null };
+    return { ok: true };
   });
