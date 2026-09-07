@@ -1,37 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-
-// Unidades federativas do Brasil. Mantenha em sincronia com o <select id="estado">
-// em src/routes/index.tsx.
-const UFS = [
-  "AC",
-  "AL",
-  "AP",
-  "AM",
-  "BA",
-  "CE",
-  "DF",
-  "ES",
-  "GO",
-  "MA",
-  "MT",
-  "MS",
-  "MG",
-  "PA",
-  "PB",
-  "PR",
-  "PE",
-  "PI",
-  "RJ",
-  "RN",
-  "RS",
-  "RO",
-  "RR",
-  "SC",
-  "SP",
-  "SE",
-  "TO",
-] as const;
+import { UFS } from "@/lib/pedido-schema";
 
 // Validação do pedido enviado pelo formulário público do site.
 // A tabela `pedidos` só recebe escrita via service_role (este server fn),

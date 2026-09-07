@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState, type FormEvent } from "react";
 import stars from "@/assets/stars.jpg";
+import { UFS, validarPedido } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
@@ -42,38 +43,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
-// Siglas das 27 unidades federativas. Mantenha em sincronia com `UFS`
-// em src/lib/pedidos.functions.ts.
-const UFS = [
-  "AC",
-  "AL",
-  "AP",
-  "AM",
-  "BA",
-  "CE",
-  "DF",
-  "ES",
-  "GO",
-  "MA",
-  "MT",
-  "MS",
-  "MG",
-  "PA",
-  "PB",
-  "PR",
-  "PE",
-  "PI",
-  "RJ",
-  "RN",
-  "RS",
-  "RO",
-  "RR",
-  "SC",
-  "SP",
-  "SE",
-  "TO",
-];
 
 const servicos = [
   {
@@ -132,6 +101,7 @@ function Index() {
   const [linkWhatsapp, setLinkWhatsapp] = useState("");
   const [registroFalhou, setRegistroFalhou] = useState(false);
   const [erroEnvio, setErroEnvio] = useState(false);
+  const [errosValidacao, setErrosValidacao] = useState<string[]>([]);
   const enviandoRef = useRef(false);
   const [enviando, setEnviando] = useState(false);
 
@@ -147,29 +117,40 @@ function Index() {
     // Trava de submissão: o ref bloqueia um segundo disparo no mesmo tick,
     // caso em que o setState assíncrono ainda não teria atualizado `enviando`.
     if (enviandoRef.current) return;
+
+    const pedido = {
+      nome: String(dados.get("nome") || "").trim(),
+      genero: String(dados.get("genero") || "").trim(),
+      email: String(dados.get("email") || "").trim(),
+      whatsapp: String(dados.get("whatsapp") || "").trim(),
+      nascimento: String(dados.get("nascimento") || "").trim(),
+      hora: horaDesconhecida ? null : String(dados.get("hora") || "").trim(),
+      horaDesconhecida,
+      cidade: String(dados.get("cidade") || "").trim(),
+      estado: String(dados.get("estado") || "").trim(),
+      tipo: String(dados.get("tipo") || "").trim(),
+      mensagem: String(dados.get("mensagem") || "").trim(),
+      enviadoEm: new Date().toISOString(),
+    };
+
+    // Valida com o mesmo schema do servidor, já sobre os valores com trim.
+    // Pega o que o navegador deixa passar (ex.: campo só com espaços) e mostra
+    // a mensagem do campo em vez de deixar o servidor recusar depois.
+    const problemas = validarPedido(pedido);
+    if (problemas.length > 0) {
+      setErrosValidacao(problemas);
+      return;
+    }
+
     enviandoRef.current = true;
     setEnviando(true);
     setRegistroFalhou(false);
     setErroEnvio(false);
+    setErrosValidacao([]);
 
     const janelaWhatsapp = window.open("", "_blank");
 
     try {
-      const pedido = {
-        nome: String(dados.get("nome") || "").trim(),
-        genero: String(dados.get("genero") || "").trim(),
-        email: String(dados.get("email") || "").trim(),
-        whatsapp: String(dados.get("whatsapp") || "").trim(),
-        nascimento: String(dados.get("nascimento") || "").trim(),
-        hora: horaDesconhecida ? null : String(dados.get("hora") || "").trim(),
-        horaDesconhecida,
-        cidade: String(dados.get("cidade") || "").trim(),
-        estado: String(dados.get("estado") || "").trim(),
-        tipo: String(dados.get("tipo") || "").trim(),
-        mensagem: String(dados.get("mensagem") || "").trim(),
-        enviadoEm: new Date().toISOString(),
-      };
-
       // Salva no banco (Lovable Cloud) para ter um registro confiável do pedido.
       // O pedido só conta como registrado quando o servidor confirma `ok`.
       try {
@@ -374,6 +355,20 @@ function Index() {
               >
                 Não foi possível preparar seu pedido. Confira os dados e tente novamente.
               </p>
+            )}
+
+            {errosValidacao.length > 0 && (
+              <div
+                className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive-foreground"
+                role="alert"
+              >
+                <p>Confira estes pontos antes de enviar:</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  {errosValidacao.map((erro) => (
+                    <li key={erro}>{erro}</li>
+                  ))}
+                </ul>
+              </div>
             )}
 
             <div className="absolute -left-[9999px]" aria-hidden="true">

@@ -1,11 +1,43 @@
 import { z } from "zod";
 
+// Unidades federativas do Brasil. Fonte única da lista: o <select id="estado">
+// do formulário e o schema do server fn importam daqui.
+export const UFS = [
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
+] as const;
+
 // Schema compartilhado entre o formulário (navegador) e o server fn.
 // As mensagens são em português para poderem ser exibidas direto na tela.
 export const pedidoSchema = z.object({
   nome: z
     .string()
-    .min(1, "Informe seu nome completo.")
+    .min(3, "Informe seu nome completo (ao menos 3 caracteres).")
     .max(120, "O nome deve ter no máximo 120 caracteres."),
   genero: z
     .string()
@@ -24,12 +56,11 @@ export const pedidoSchema = z.object({
   horaDesconhecida: z.boolean().optional().default(false),
   cidade: z
     .string()
-    .min(1, "Informe a cidade de nascimento.")
+    .min(2, "Informe a cidade de nascimento (ao menos 2 caracteres).")
     .max(80, "A cidade deve ter no máximo 80 caracteres."),
-  estado: z
-    .string()
-    .min(1, "Informe o estado de nascimento.")
-    .max(40, "O estado deve ter no máximo 40 caracteres."),
+  estado: z.enum(UFS, {
+    errorMap: () => ({ message: "Selecione o estado de nascimento." }),
+  }),
   tipo: z
     .string()
     .min(1, "Escolha o tipo de leitura.")
