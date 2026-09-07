@@ -1,19 +1,51 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+// Unidades federativas do Brasil. Mantenha em sincronia com o <select id="estado">
+// em src/routes/index.tsx.
+const UFS = [
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
+] as const;
+
 // Validação do pedido enviado pelo formulário público do site.
 // A tabela `pedidos` só recebe escrita via service_role (este server fn),
 // então nenhum dado é exposto ou gravado diretamente pelo navegador.
 const pedidoSchema = z.object({
-  nome: z.string().min(1).max(120),
+  nome: z.string().min(3).max(120),
   genero: z.string().min(1).max(20),
   email: z.string().email().max(160),
   whatsapp: z.string().min(1).max(25),
   nascimento: z.string().min(1),
   hora: z.string().nullable(),
   horaDesconhecida: z.boolean().optional().default(false),
-  cidade: z.string().min(1).max(80),
-  estado: z.string().min(1).max(40),
+  cidade: z.string().min(2).max(80),
+  estado: z.enum(UFS),
   tipo: z.string().min(1).max(80),
   mensagem: z.string().max(1000).optional().default(""),
 });

@@ -43,6 +43,38 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+// Siglas das 27 unidades federativas. Mantenha em sincronia com `UFS`
+// em src/lib/pedidos.functions.ts.
+const UFS = [
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
+];
+
 const servicos = [
   {
     nome: "Caminho de Marte",
@@ -357,6 +389,7 @@ function Index() {
                 id="nome"
                 name="nome"
                 required
+                minLength={3}
                 maxLength={120}
                 className={inputClass}
                 placeholder="Como está no documento"
@@ -409,6 +442,8 @@ function Index() {
                 type="email"
                 required
                 maxLength={160}
+                pattern="[^@\s]+@[^@\s]+\.[A-Za-z]{2,}"
+                title="Informe um e-mail válido, com domínio completo (ex.: voce@email.com)."
                 className={inputClass}
                 placeholder="voce@email.com"
                 aria-describedby="dados-aviso"
@@ -485,6 +520,7 @@ function Index() {
                   id="cidade"
                   name="cidade"
                   required
+                  minLength={2}
                   maxLength={80}
                   className={inputClass}
                   placeholder="São Paulo"
@@ -494,14 +530,16 @@ function Index() {
                 <label className={labelClass} htmlFor="estado">
                   Estado
                 </label>
-                <input
-                  id="estado"
-                  name="estado"
-                  required
-                  maxLength={40}
-                  className={inputClass}
-                  placeholder="SP"
-                />
+                <select id="estado" name="estado" required defaultValue="" className={inputClass}>
+                  <option value="" disabled className="bg-card">
+                    UF
+                  </option>
+                  {UFS.map((uf) => (
+                    <option key={uf} value={uf} className="bg-card">
+                      {uf}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
