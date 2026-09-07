@@ -5,7 +5,7 @@ import { UFS, validarPedido } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.1";
+const SITE_VERSION = "1.4.2";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -424,7 +424,12 @@ function Index() {
               className="rounded-md border border-gold/25 bg-secondary/40 p-3 text-xs leading-relaxed text-muted-foreground"
             >
               Usaremos seus dados de nascimento e contato apenas para preparar sua leitura e falar
-              com você sobre o pedido. Ao continuar, eles serão enviados ao WhatsApp informado.
+              com você sobre o pedido. Ao continuar, eles serão registrados no sistema de
+              atendimento e enviados ao WhatsApp informado. Consulte a{" "}
+              <a href="#privacidade" className="text-gold underline-offset-4 hover:underline">
+                política de privacidade
+              </a>
+              .
             </p>
 
             <div>
@@ -574,6 +579,22 @@ function Index() {
               />
             </div>
 
+            <label className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+              <input
+                type="checkbox"
+                name="consentimento"
+                required
+                className="mt-1 h-4 w-4 accent-[var(--gold)]"
+              />
+              <span>
+                Li e concordo com a{" "}
+                <a href="#privacidade" className="text-gold underline-offset-4 hover:underline">
+                  política de privacidade
+                </a>
+                .
+              </span>
+            </label>
+
             <button
               type="submit"
               disabled={enviando}
@@ -583,6 +604,58 @@ function Index() {
             </button>
           </form>
         )}
+      </section>
+
+      {/* Privacidade */}
+      <section id="privacidade" className="mx-auto max-w-3xl scroll-mt-8 px-6 py-16">
+        <p className="eyebrow">Privacidade</p>
+        <h2 className="mt-3 text-3xl sm:text-4xl">Como cuidamos dos seus dados</h2>
+        <div className="mt-6 space-y-5 text-sm leading-relaxed text-muted-foreground">
+          <div>
+            <h3 className="text-xl text-foreground">Quais dados coletamos</h3>
+            <p className="mt-2">
+              Coletamos os dados que você informa no formulário: nome, contato, data e local de
+              nascimento, horário de nascimento, tipo de leitura e observações sobre o seu pedido.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-xl text-foreground">Para que usamos</h3>
+            <p className="mt-2">
+              Usamos essas informações para entender sua solicitação, preparar a leitura, entrar
+              em contato e enviar a mensagem inicial pelo WhatsApp. Não usamos os dados para venda
+              de listas ou publicidade de terceiros.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-xl text-foreground">Onde os dados ficam</h3>
+            <p className="mt-2">
+              O pedido é enviado ao Supabase/Lovable Cloud para registro interno e os dados
+              necessários ao atendimento são compartilhados com o WhatsApp quando você prossegue
+              pelo botão de contato. O acesso ao registro é restrito à operação da exaltavenus.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-xl text-foreground">Retenção e seus direitos</h3>
+            <p className="mt-2">
+              Mantemos os dados pelo tempo necessário para atender o pedido e cumprir obrigações
+              aplicáveis. Você pode solicitar confirmação de uso, acesso, correção ou exclusão dos
+              seus dados entrando em contato pelo Instagram{" "}
+              <a
+                href="https://instagram.com/exaltavenus"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold underline-offset-4 hover:underline"
+              >
+                @exaltavenus
+              </a>
+              .
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground/80">
+            Esta política pode ser atualizada quando houver mudanças no atendimento, nas ferramentas
+            utilizadas ou nas exigências legais aplicáveis.
+          </p>
+        </div>
       </section>
 
       {/* Rodapé */}
