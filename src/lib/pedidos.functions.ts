@@ -22,22 +22,31 @@ export const registrarPedido = createServerFn({ method: "POST" })
   .inputValidator((data) => pedidoSchema.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("pedidos").insert({
-      nome: data.nome,
-      genero: data.genero,
-      email: data.email,
-      whatsapp: data.whatsapp,
-      nascimento: data.nascimento,
-      hora: data.hora,
-      hora_desconhecida: data.horaDesconhecida,
-      cidade: data.cidade,
-      estado: data.estado,
-      tipo: data.tipo,
-      mensagem: data.mensagem,
-    });
+
+    // Tenta inserir e retorna a linha criada para diagnóstico. Loga o erro completo
+    // no servidor para facilitar a investigação sem expor detalhes ao cliente.
+    const { data: inserted, error } = await supabaseAdmin
+      .from("pedidos")
+      .insert({
+        nome: data.nome,
+        genero: data.genero,
+        email: data.email,
+        whatsapp: data.whatsapp,
+        nascimento: data.nascimento,
+        hora: data.hora,
+        hora_desconhecida: data.horaDesconhecida,
+        cidade: data.cidade,
+        estado: data.estado,
+        tipo: data.tipo,
+        mensagem: data.mensagem,
+      })
+      .select();
+
     if (error) {
-      console.error("[pedidos] Erro ao registrar pedido:", error.message);
+      // Loga o objeto de erro completo para debugar (não retorna detalhes ao cliente).
+      console.error("[pedidos] Erro ao registrar pedido:", error);
       throw new Error("Não foi possível registrar o pedido.");
     }
-    return { ok: true };
+
+    return { ok: true, pedido: inserted?.[0] ?? null };
   });

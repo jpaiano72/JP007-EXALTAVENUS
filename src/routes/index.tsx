@@ -4,7 +4,7 @@ import stars from "@/assets/stars.jpg";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.3.7";
+const SITE_VERSION = "1.3.8";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -139,9 +139,14 @@ function Index() {
       };
 
       // Salva no banco (Lovable Cloud) para ter um registro confiável do pedido.
+      // O pedido só conta como registrado quando o servidor confirma `ok`.
       try {
-        await registrarPedido({ data: pedido });
-      } catch {
+        const resultado = await registrarPedido({ data: pedido });
+        if (!resultado?.ok) {
+          throw new Error("Registro do pedido não confirmado pelo servidor.");
+        }
+      } catch (err) {
+        console.error("[pedidos] Falha ao registrar pedido:", err);
         setRegistroFalhou(true);
       }
 
@@ -297,7 +302,9 @@ function Index() {
         {enviado ? (
           <div className="panel mt-8 rounded-xl p-8 text-center" role="status" aria-live="polite">
             <p className="font-display text-3xl text-gold">
-              Recebi seu pedido{nome ? `, ${nome}` : ""}!
+              {registroFalhou
+                ? `Quase lá${nome ? `, ${nome}` : ""}!`
+                : `Recebi seu pedido${nome ? `, ${nome}` : ""}!`}
             </p>
             {registroFalhou && (
               <p className="mt-4 text-sm leading-relaxed text-gold-soft">
