@@ -5,7 +5,7 @@ import { UFS, validarPedido } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.0";
+const SITE_VERSION = "1.4.1";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
