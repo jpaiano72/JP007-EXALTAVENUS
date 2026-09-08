@@ -52,7 +52,13 @@ export const pedidoSchema = z.object({
     .min(8, "Informe seu WhatsApp com DDD.")
     .max(25, "O WhatsApp deve ter no máximo 25 caracteres."),
   nascimento: z.string().min(1, "Informe sua data de nascimento."),
-  hora: z.string().nullable(),
+  hora: z
+    .string()
+    .regex(
+      /^([01]\d|2[0-3]):[0-5]\d$/,
+      'Informe a hora no formato HH:MM ou marque "Não sei a hora exata".',
+    )
+    .nullable(),
   horaDesconhecida: z.boolean().optional().default(false),
   cidade: z
     .string()
