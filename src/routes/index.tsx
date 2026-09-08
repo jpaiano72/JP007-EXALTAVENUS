@@ -395,7 +395,7 @@ function Index() {
 
             <div>
               <label className={labelClass} htmlFor="genero">
-                Gênero (opcional)
+                Gênero
               </label>
               <select
                 id="genero"
