@@ -39,10 +39,7 @@ export const pedidoSchema = z.object({
     .string()
     .min(3, "Informe seu nome completo (ao menos 3 caracteres).")
     .max(120, "O nome deve ter no máximo 120 caracteres."),
-  genero: z
-    .string()
-    .min(1, "Selecione uma opção de gênero.")
-    .max(20, "Opção de gênero inválida."),
+  genero: z.string().min(1, "Selecione uma opção de gênero.").max(20, "Opção de gênero inválida."),
   email: z
     .string()
     .email("Informe um e-mail válido, no formato voce@email.com.")
@@ -67,10 +64,7 @@ export const pedidoSchema = z.object({
   estado: z.enum(UFS, {
     errorMap: () => ({ message: "Selecione o estado de nascimento." }),
   }),
-  tipo: z
-    .string()
-    .min(1, "Escolha o tipo de leitura.")
-    .max(80, "Tipo de leitura inválido."),
+  tipo: z.string().min(1, "Escolha o tipo de leitura.").max(80, "Tipo de leitura inválido."),
   mensagem: z
     .string()
     .max(1000, "O campo de observações deve ter no máximo 1000 caracteres.")
