@@ -9,7 +9,7 @@ const SITE_VERSION = "1.4.3";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
-const WHATSAPP_NUMERO = "5511988592179";
+const WHATSAPP_NUMERO = "5511991164433";
 
 export const Route = createFileRoute("/")({
   head: () => ({
