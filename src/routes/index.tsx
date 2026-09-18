@@ -5,7 +5,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.4";
+const SITE_VERSION = "1.4.5";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -224,7 +224,7 @@ function Index() {
       <p className="absolute left-3 top-3 text-[10px] text-gold/80">v{SITE_VERSION}</p>
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-40"
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-70"
         style={{ backgroundImage: `url(${stars})` }}
       />
 
