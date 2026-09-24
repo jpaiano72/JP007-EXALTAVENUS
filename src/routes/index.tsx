@@ -11,7 +11,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.1";
+const SITE_VERSION = "1.5.2";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -346,18 +346,40 @@ function Index() {
         <h2 className="mt-3 text-3xl sm:text-4xl">Quem lê o seu mapa</h2>
         <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
           <p>
-            [Texto de exemplo — substitua pelo seu.] Sou astróloga e estudo o céu há alguns anos,
-            com formação em astrologia tradicional e contemporânea. Meu trabalho nasce da vontade de
-            traduzir o simbolismo dos astros em algo concreto, que caiba na vida real de quem me
-            procura.
+            Sou Luciana Cartaxo. Minha trajetória profissional começou com aulas de inglês depois do
+            intercâmbio, passou por mais de vinte anos de carreira executiva em multinacionais e, ao
+            longo do tempo, encontrou novos caminhos no estudo da filosofia e da astrologia.
           </p>
           <p>
-            Não trabalho com relatórios prontos nem com interpretações geradas por programas. Cada
-            mapa é calculado, estudado e escrito por mim, respeitando a história de quem está do
-            outro lado. Por isso atendo poucas pessoas por vez.
+            À primeira vista, são áreas bastante diferentes. Para mim, elas se encontram no interesse
+            por compreender como as coisas funcionam, reconhecer padrões e estabelecer relações entre
+            elementos que, isoladamente, nem sempre fazem sentido.
           </p>
-          <p className="text-foreground/80">
-            — Astróloga responsável, <span className="text-gold">@exaltavenus</span>
+          <p>
+            Sempre gostei de investigar, organizar ideias e transformar complexidade em clareza. Na
+            astrologia, encontrei uma linguagem especialmente rica para exercitar esse olhar sobre a
+            experiência humana.
+          </p>
+          <p>
+            Meu interesse pelo autoconhecimento também foi se transformando ao longo dos anos. Hoje,
+            acredito menos na busca por uma versão ideal de nós mesmos e mais na possibilidade de
+            compreender quem somos, reconhecer nossos recursos e fazer escolhas conscientes a partir
+            da vida que estamos vivendo. É essa perspectiva que orienta meu trabalho.
+          </p>
+          <p>
+            Cada mapa é analisado individualmente, com atenção às particularidades de sua configuração.
+            Procuro integrar o conhecimento astrológico a uma interpretação clara, sensível e
+            fundamentada, que ajude a reconhecer características, compreender tensões e identificar
+            possibilidades de desenvolvimento.
+          </p>
+          <p>
+            Não vejo o mapa como uma definição de quem alguém é ou de quem deverá se tornar. Vejo nele
+            uma ferramenta de investigação e reflexão, capaz de ampliar nossa compreensão sobre nós
+            mesmos.
+          </p>
+          <p>
+            Meu propósito é oferecer uma leitura que faça sentido para quem a recebe, não apenas
+            durante a leitura, mas também nos momentos em que a vida convida a olhar para si novamente.
           </p>
         </div>
       </section>
