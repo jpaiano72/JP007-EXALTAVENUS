@@ -28,6 +28,7 @@ export type Database = {
           mensagem: string | null
           nascimento: string
           nome: string
+          pais: string
           preferencia_entrega: string | null
           tipo: string
           whatsapp: string
@@ -45,6 +46,7 @@ export type Database = {
           mensagem?: string | null
           nascimento: string
           nome: string
+          pais?: string
           preferencia_entrega?: string | null
           tipo: string
           whatsapp: string
@@ -62,6 +64,7 @@ export type Database = {
           mensagem?: string | null
           nascimento?: string
           nome?: string
+          pais?: string
           preferencia_entrega?: string | null
           tipo?: string
           whatsapp?: string

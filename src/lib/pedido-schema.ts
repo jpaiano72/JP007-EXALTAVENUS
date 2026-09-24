@@ -60,6 +60,10 @@ export const pedidoSchema = z
     estado: z.enum(UFS, {
       errorMap: () => ({ message: "Selecione o estado de nascimento." }),
     }),
+    pais: z
+      .string()
+      .min(2, "Informe o país de nascimento (ao menos 2 caracteres).")
+      .max(60, "O país deve ter no máximo 60 caracteres."),
     tipo: z.string().min(1, "Escolha o tipo de leitura.").max(80, "Tipo de leitura inválido."),
     mensagem: z
       .string()

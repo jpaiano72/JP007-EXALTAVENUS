@@ -11,7 +11,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.5";
+const SITE_VERSION = "1.5.6";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -195,6 +195,7 @@ function Index() {
       hora: String(dados.get("hora") || "").trim(),
       cidade: String(dados.get("cidade") || "").trim(),
       estado: String(dados.get("estado") || "").trim(),
+      pais: String(dados.get("pais") || "").trim(),
       tipo: String(dados.get("tipo") || "").trim(),
       mensagem: String(dados.get("mensagem") || "").trim(),
       enviadoEm: new Date().toISOString(),
@@ -242,7 +243,7 @@ function Index() {
           : null,
         `Data de nascimento: ${pedido.nascimento}`,
         `Hora de nascimento: ${pedido.hora}`,
-        `Cidade/Estado: ${pedido.cidade} - ${pedido.estado}`,
+        `Cidade/Estado/País: ${pedido.cidade} - ${pedido.estado} - ${pedido.pais}`,
         `Tipo de leitura: ${pedido.tipo}`,
         pedido.mensagem ? `Observações: ${pedido.mensagem}` : null,
       ]
@@ -701,6 +702,23 @@ function Index() {
                   ))}
                 </select>
               </div>
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="pais">
+                País de nascimento
+              </label>
+              <input
+                id="pais"
+                name="pais"
+                required
+                minLength={2}
+                maxLength={60}
+                defaultValue="Brasil"
+                className={inputClass}
+                placeholder="Brasil"
+                aria-invalid={campoComErro("pais")}
+              />
             </div>
 
             <div>
