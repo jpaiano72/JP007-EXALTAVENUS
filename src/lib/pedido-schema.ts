@@ -52,12 +52,7 @@ export const pedidoSchema = z
     nascimento: z.string().min(1, "Informe sua data de nascimento."),
     hora: z
       .string()
-      .regex(
-        /^([01]\d|2[0-3]):[0-5]\d$/,
-        'Informe a hora no formato HH:MM ou marque "Não sei a hora exata".',
-      )
-      .nullable(),
-    horaDesconhecida: z.boolean().optional().default(false),
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Informe a hora de nascimento no formato HH:MM."),
     cidade: z
       .string()
       .min(2, "Informe a cidade de nascimento (ao menos 2 caracteres).")

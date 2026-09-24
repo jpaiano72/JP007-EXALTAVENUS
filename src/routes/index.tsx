@@ -11,7 +11,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.4";
+const SITE_VERSION = "1.5.5";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -149,7 +149,6 @@ const perguntasFrequentes = [
 
 function Index() {
   const [enviado, setEnviado] = useState(false);
-  const [horaDesconhecida, setHoraDesconhecida] = useState(false);
   const [preferenciaEntrega, setPreferenciaEntrega] = useState<"E-mail" | "WhatsApp" | "Ambos">(
     "E-mail",
   );
@@ -193,8 +192,7 @@ function Index() {
       email: String(dados.get("email") || "").trim(),
       whatsapp: String(dados.get("whatsapp") || "").trim(),
       nascimento: String(dados.get("nascimento") || "").trim(),
-      hora: horaDesconhecida ? null : String(dados.get("hora") || "").trim(),
-      horaDesconhecida,
+      hora: String(dados.get("hora") || "").trim(),
       cidade: String(dados.get("cidade") || "").trim(),
       estado: String(dados.get("estado") || "").trim(),
       tipo: String(dados.get("tipo") || "").trim(),
@@ -243,7 +241,7 @@ function Index() {
           ? `WhatsApp: ${pedido.whatsapp}`
           : null,
         `Data de nascimento: ${pedido.nascimento}`,
-        `Hora de nascimento: ${pedido.hora || "não sei a hora"}`,
+        `Hora de nascimento: ${pedido.hora}`,
         `Cidade/Estado: ${pedido.cidade} - ${pedido.estado}`,
         `Tipo de leitura: ${pedido.tipo}`,
         pedido.mensagem ? `Observações: ${pedido.mensagem}` : null,
@@ -649,30 +647,16 @@ function Index() {
                   id="hora"
                   name="hora"
                   type="time"
-                  required={!horaDesconhecida}
-                  disabled={horaDesconhecida}
-                  className={`${inputClass} disabled:opacity-40`}
+                  required
+                  className={inputClass}
                   aria-invalid={campoComErro("hora")}
                 />
               </div>
             </div>
 
-            <label className="flex items-start gap-2 text-sm text-muted-foreground">
-              <input
-                type="checkbox"
-                name="horaDesconhecida"
-                checked={horaDesconhecida}
-                onChange={(e) => setHoraDesconhecida(e.target.checked)}
-                className="mt-1 h-4 w-4 accent-[var(--gold)]"
-              />
-              Não sei a hora exata do meu nascimento
-            </label>
             <p className="rounded-md border border-gold/25 bg-secondary/40 p-3 text-xs leading-relaxed text-muted-foreground">
-              ✦ A hora exata é essencial para a precisão do mapa: ela define o Ascendente e as
-              casas. Você encontra esse dado na certidão de nascimento ou na declaração de nascido
-              vivo do hospital. Se não souber, seguimos com uma leitura adaptada. O horário de
-              nascimento é essencial para a elaboração do mapa. Se você não souber essa informação,
-              consulte nosso{" "}
+              O horário de nascimento é essencial para a elaboração do mapa. Se você não souber
+              essa informação, consulte nosso{" "}
               <a href="#faq" className="text-gold underline-offset-4 hover:underline">
                 FAQ
               </a>{" "}
