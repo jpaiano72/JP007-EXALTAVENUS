@@ -12,7 +12,7 @@ import { UFS, validarPedido, type ErroValidacao, type PedidoInput } from "@/lib/
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.11";
+const SITE_VERSION = "1.5.13";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -21,6 +21,14 @@ const WHATSAPP_NUMERO = "5511991164433";
 // Tentativas silenciosas de registro no banco após a confirmação de pagamento.
 const TENTATIVAS_REGISTRO = 3;
 const INTERVALO_ENTRE_TENTATIVAS_MS = 700;
+
+// Converte "aaaa-mm-dd" (formato do <input type="date">) para "dd-mm-aaaa".
+function formatarDataBr(data: string): string {
+  const partes = data.split("-");
+  if (partes.length !== 3) return data;
+  const [ano, mes, dia] = partes;
+  return `${dia}-${mes}-${ano}`;
+}
 
 async function tentarRegistrarPedido(pedido: PedidoInput): Promise<boolean> {
   for (let tentativa = 1; tentativa <= TENTATIVAS_REGISTRO; tentativa++) {
@@ -258,7 +266,7 @@ function Index() {
         pedidoPendente.preferenciaEntrega === "Ambos"
           ? `WhatsApp: ${pedidoPendente.whatsapp}`
           : null,
-        `Data de nascimento: ${pedidoPendente.nascimento}`,
+        `Data de nascimento: ${formatarDataBr(pedidoPendente.nascimento)}`,
         `Hora de nascimento: ${pedidoPendente.hora}`,
         `Cidade/Estado/País: ${pedidoPendente.cidade} - ${pedidoPendente.estado} - ${pedidoPendente.pais}`,
         pedidoPendente.mensagem ? `Observações: ${pedidoPendente.mensagem}` : null,
@@ -781,21 +789,6 @@ function Index() {
                 className={inputClass}
                 placeholder="Brasil"
                 aria-invalid={campoComErro("pais")}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass} htmlFor="mensagem">
-                O que você busca nesta leitura?
-              </label>
-              <textarea
-                id="mensagem"
-                name="mensagem"
-                rows={4}
-                maxLength={1000}
-                className={inputClass}
-                placeholder="Conte um pouco do seu momento, dúvidas ou temas que gostaria de olhar com mais cuidado."
-                aria-invalid={campoComErro("mensagem")}
               />
             </div>
 
