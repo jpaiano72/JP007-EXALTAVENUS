@@ -11,7 +11,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.6";
+const SITE_VERSION = "1.5.7";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -49,37 +49,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
-const servicos = [
-  {
-    nome: "Caminho de Marte",
-    preco: "Valor a definir",
-    descricao:
-      "A cada dois anos, Marte volta à posição exata em que estava quando você nasceu. Esse retorno abre um novo ciclo e mostra qual área da sua vida entra em movimento. Leitura personalizada do seu ciclo de Marte, com os marcos do período.",
-    destaque: true,
-  },
-  {
-    nome: "Mapa Astral Completo",
-    preco: "R$ 300",
-    descricao:
-      "Leitura completa do seu mapa natal: Sol, Lua, Ascendente, casas, planetas e aspectos. Você recebe o material interpretado à mão e uma consulta ao vivo para conversarmos sobre ele.",
-    destaque: false,
-  },
-  {
-    nome: "Revolução Solar",
-    preco: "Valor a definir",
-    descricao:
-      "A leitura do seu ano astrológico, de aniversário a aniversário: os temas em destaque, os ciclos que se abrem e os melhores momentos para agir.",
-    destaque: false,
-  },
-  {
-    nome: "Sinastria / Mapa do Casal",
-    preco: "Valor a definir",
-    descricao:
-      "A comparação entre dois mapas: encontros, atritos e potenciais da relação. Ideal para casais e também para parcerias de trabalho.",
-    destaque: false,
-  },
-];
 
 const passos = [
   {
@@ -196,7 +165,6 @@ function Index() {
       cidade: String(dados.get("cidade") || "").trim(),
       estado: String(dados.get("estado") || "").trim(),
       pais: String(dados.get("pais") || "").trim(),
-      tipo: String(dados.get("tipo") || "").trim(),
       mensagem: String(dados.get("mensagem") || "").trim(),
       enviadoEm: new Date().toISOString(),
     };
@@ -244,7 +212,6 @@ function Index() {
         `Data de nascimento: ${pedido.nascimento}`,
         `Hora de nascimento: ${pedido.hora}`,
         `Cidade/Estado/País: ${pedido.cidade} - ${pedido.estado} - ${pedido.pais}`,
-        `Tipo de leitura: ${pedido.tipo}`,
         pedido.mensagem ? `Observações: ${pedido.mensagem}` : null,
       ]
         .filter((linha) => linha !== null)
@@ -722,29 +689,6 @@ function Index() {
             </div>
 
             <div>
-              <label className={labelClass} htmlFor="tipo">
-                Tipo de leitura desejada
-              </label>
-              <select
-                id="tipo"
-                name="tipo"
-                required
-                defaultValue="Mapa Astral Completo"
-                className={inputClass}
-                aria-invalid={campoComErro("tipo")}
-              >
-                {servicos.map((s) => (
-                  <option key={s.nome} value={s.nome} className="bg-card">
-                    {s.nome}
-                  </option>
-                ))}
-                <option value="Ainda não sei" className="bg-card">
-                  Ainda não sei
-                </option>
-              </select>
-            </div>
-
-            <div>
               <label className={labelClass} htmlFor="mensagem">
                 O que você busca nesta leitura?
               </label>
@@ -809,7 +753,7 @@ function Index() {
             <h3 className="text-xl text-foreground">Quais dados coletamos</h3>
             <p className="mt-2">
               Coletamos os dados que você informa no formulário: nome, contato, data e local de
-              nascimento, horário de nascimento, tipo de leitura e observações sobre o seu pedido.
+              nascimento, horário de nascimento e observações sobre o seu pedido.
             </p>
           </div>
           <div>
