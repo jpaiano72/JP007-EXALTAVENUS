@@ -11,7 +11,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.0";
+const SITE_VERSION = "1.5.1";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -408,7 +408,7 @@ function Index() {
           </p>
         </div>
         <a
-          href={`https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
+          href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMERO}&text=${encodeURIComponent(
             "Olá, Luciana! Recebi meu relatório de Mapa Natal e gostaria de saber sobre o atendimento individual.",
           )}`}
           target="_blank"
