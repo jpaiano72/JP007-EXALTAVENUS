@@ -52,12 +52,7 @@ export const pedidoSchema = z
     nascimento: z.string().min(1, "Informe sua data de nascimento."),
     hora: z
       .string()
-      .regex(
-        /^([01]\d|2[0-3]):[0-5]\d$/,
-        'Informe a hora no formato HH:MM ou marque "Não sei a hora exata".',
-      )
-      .nullable(),
-    horaDesconhecida: z.boolean().optional().default(false),
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Informe a hora de nascimento no formato HH:MM."),
     cidade: z
       .string()
       .min(2, "Informe a cidade de nascimento (ao menos 2 caracteres).")
@@ -65,6 +60,10 @@ export const pedidoSchema = z
     estado: z.enum(UFS, {
       errorMap: () => ({ message: "Selecione o estado de nascimento." }),
     }),
+    pais: z
+      .string()
+      .min(2, "Informe o país de nascimento (ao menos 2 caracteres).")
+      .max(60, "O país deve ter no máximo 60 caracteres."),
     tipo: z.string().min(1, "Escolha o tipo de leitura.").max(80, "Tipo de leitura inválido."),
     mensagem: z
       .string()
