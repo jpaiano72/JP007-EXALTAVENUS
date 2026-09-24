@@ -14,3 +14,4 @@
 - Toda melhoria publicada deve incrementar a versão patch em `package.json`.
 - Mantenha a mesma versão no `package-lock.json` e em `SITE_VERSION` dentro de `src/routes/index.tsx`.
 - Use incremento patch para melhorias e correções compatíveis; reserve mudanças minor/major para alterações de produto ou compatibilidade.
+- A próxima melhoria deve iniciar a série `1.5.x` em `1.5.0`; depois, incremente o último número a cada nova modificação (`1.5.1`, `1.5.2` e assim por diante).
