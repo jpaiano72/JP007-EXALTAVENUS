@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import stars from "@/assets/stars.jpg";
 import {
   Accordion,
@@ -12,7 +12,7 @@ import { UFS, validarPedido, type ErroValidacao, type PedidoInput } from "@/lib/
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.16";
+const SITE_VERSION = "1.5.17";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -309,6 +309,16 @@ function Index() {
     }
   }
 
+  function handleIrParaFormulario(e: MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    const campoNome = document.getElementById("nome");
+    document.getElementById("formulario")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (campoNome instanceof HTMLElement) {
+      // Foca só depois do scroll suave terminar, senão o foco interrompe a rolagem.
+      window.setTimeout(() => campoNome.focus({ preventScroll: true }), 500);
+    }
+  }
+
   function handleNovaSolicitacao() {
     setEtapa("formulario");
     setPedidoPendente(null);
@@ -347,6 +357,7 @@ function Index() {
         </p>
         <a
           href="#formulario"
+          onClick={handleIrParaFormulario}
           className="mt-8 inline-flex w-fit items-center justify-center rounded-full bg-gradient-to-r from-gold-soft to-gold px-9 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.03]"
         >
           Conheça seu Mapa Natal
