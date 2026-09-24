@@ -353,7 +353,23 @@ function Index() {
         <div className="panel mt-8 rounded-xl p-6 sm:p-8">
           <p className="text-[15px] leading-relaxed text-muted-foreground">
             <span className="text-foreground">Atendimento individual, R$ 220,00.</span>{" "}
-            <span className="text-gold">Duração:</span> 1h30.{
+            <span className="text-gold">Duração:</span> 1h30.{" "}
+            <span className="text-gold">Modalidade:</span> presencial ou virtual. Contratação
+            opcional, após o recebimento do relatório.
+          </p>
+        </div>
+        <a
+          href={`https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
+            "Olá, Luciana! Recebi meu relatório de Mapa Natal e gostaria de saber sobre o atendimento individual.",
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 inline-flex w-fit items-center justify-center rounded-full bg-gradient-to-r from-gold-soft to-gold px-9 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.03]"
+        >
+          Quero agendar uma conversa
+        </a>
+      </section>
+
       {/* Serviços */}
       <section className="mx-auto max-w-5xl px-6 py-16">
         <p className="eyebrow">Serviços</p>
