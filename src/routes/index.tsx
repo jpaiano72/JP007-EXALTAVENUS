@@ -12,7 +12,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.9";
+const SITE_VERSION = "1.5.10";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -520,7 +520,12 @@ function Index() {
               Usaremos seus dados de nascimento e contato apenas para preparar sua leitura e falar
               com você sobre o pedido. Ao continuar, eles serão registrados no sistema de
               atendimento e enviados ao WhatsApp informado. Consulte a{" "}
-              <a href="#privacidade" className="text-gold underline-offset-4 hover:underline">
+              <a
+                href="/politica-de-privacidade"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold underline-offset-4 hover:underline"
+              >
                 política de privacidade
               </a>
               .
@@ -713,7 +718,12 @@ function Index() {
               />
               <span>
                 Li e concordo com a{" "}
-                <a href="#privacidade" className="text-gold underline-offset-4 hover:underline">
+                <a
+                  href="/politica-de-privacidade"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gold underline-offset-4 hover:underline"
+                >
                   política de privacidade
                 </a>
                 .
@@ -745,71 +755,6 @@ function Index() {
         )}
       </section>
 
-      {/* Privacidade */}
-      <section id="privacidade" className="mx-auto max-w-3xl scroll-mt-8 px-6 py-16">
-        <p className="eyebrow">Privacidade</p>
-        <h2 className="mt-3 text-3xl sm:text-4xl">Como cuidamos dos seus dados</h2>
-        <div className="mt-6 space-y-5 text-sm leading-relaxed text-muted-foreground">
-          <div>
-            <h3 className="text-xl text-foreground">Quais dados coletamos</h3>
-            <p className="mt-2">
-              Coletamos os dados que você informa no formulário: nome, contato, data e local de
-              nascimento, horário de nascimento e observações sobre o seu pedido.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-xl text-foreground">Para que usamos</h3>
-            <p className="mt-2">
-              Usamos essas informações para entender sua solicitação, preparar a leitura, entrar em
-              contato e enviar a mensagem inicial pelo WhatsApp. Não usamos os dados para venda de
-              listas ou publicidade de terceiros.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-xl text-foreground">Onde os dados ficam</h3>
-            <p className="mt-2">
-              O pedido é enviado ao Supabase/Lovable Cloud para registro interno e os dados
-              necessários ao atendimento são compartilhados com o WhatsApp quando você prossegue
-              pelo botão de contato. O acesso ao registro é restrito à operação da EXALTAVENUS.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-xl text-foreground">Retenção e seus direitos</h3>
-            <p className="mt-2">
-              Mantemos os dados pelo tempo necessário para atender o pedido e cumprir obrigações
-              aplicáveis. Você pode solicitar confirmação de uso, acesso, correção ou exclusão dos
-              seus dados entrando em contato pelo Instagram{" "}
-              <a
-                href="https://instagram.com/exaltavenus"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gold underline-offset-4 hover:underline"
-              >
-                @exaltavenus
-              </a>
-              .
-            </p>
-          </div>
-          <p className="text-xs text-muted-foreground/80">
-            Esta política pode ser atualizada quando houver mudanças no atendimento, nas ferramentas
-            utilizadas ou nas exigências legais aplicáveis.
-          </p>
-        </div>
-      </section>
-
-      {/* Condições de Compra */}
-      <section
-        id="condicoes-de-compra"
-        className="mx-auto max-w-3xl scroll-mt-8 px-6 py-16 text-center"
-      >
-        <p className="eyebrow">Condições de Compra</p>
-        <h2 className="mt-3 text-3xl sm:text-4xl">Em breve</h2>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Estamos preparando as condições de compra completas da EXALTAVENUS. Em caso de dúvidas
-          sobre seu pedido, entre em contato pelos canais indicados no rodapé.
-        </p>
-      </section>
-
       {/* Rodapé */}
       <footer className="mt-10 border-t border-border/60 px-6 py-10 text-center">
         <p className="text-xs italic tracking-wide text-muted-foreground/80">
@@ -819,12 +764,19 @@ function Index() {
         <p className="mt-4 text-sm tracking-wide text-muted-foreground">
           <span className="font-display text-gradient-gold">EXALTAVENUS</span>
           <span className="mx-2 text-muted-foreground/50">·</span>
-          <a href="#privacidade" className="underline-offset-4 hover:text-gold hover:underline">
+          <a
+            href="/politica-de-privacidade"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline-offset-4 hover:text-gold hover:underline"
+          >
             Política de Privacidade
           </a>
           <span className="mx-2 text-muted-foreground/50">·</span>
           <a
-            href="#condicoes-de-compra"
+            href="/condicoes-de-compra"
+            target="_blank"
+            rel="noopener noreferrer"
             className="underline-offset-4 hover:text-gold hover:underline"
           >
             Condições de Compra
@@ -862,7 +814,12 @@ function Index() {
         <p className="mx-auto mt-5 max-w-xl text-xs leading-relaxed text-muted-foreground/70">
           Seus dados serão utilizados para elaborar e entregar seu relatório, confirmar o pagamento
           e entrar em contato sobre seu pedido. Para saber mais, consulte nossa{" "}
-          <a href="#privacidade" className="underline-offset-4 hover:text-gold hover:underline">
+          <a
+            href="/politica-de-privacidade"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline-offset-4 hover:text-gold hover:underline"
+          >
             Política de Privacidade
           </a>
           .
