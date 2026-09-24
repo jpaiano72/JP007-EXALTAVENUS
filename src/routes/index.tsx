@@ -314,6 +314,23 @@ function Index() {
         </div>
       </section>
 
+      {/* Como funciona */}
+      <section className="mx-auto max-w-4xl px-6 py-16">
+        <p className="eyebrow">Como funciona</p>
+        <h2 className="mt-3 text-3xl sm:text-4xl">Do pedido à consulta</h2>
+        <ol className="mt-10 grid gap-5 sm:grid-cols-2">
+          {passos.map((p, i) => (
+            <li key={p.titulo} className="panel rounded-xl p-6">
+              <span className="font-display text-3xl text-gold/70">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3 className="mt-2 text-xl">{p.titulo}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.texto}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       {/* Atendimento pós-relatório */}
       <section className="mx-auto max-w-3xl px-6 py-16">
         <p className="eyebrow">Atendimento pós-relatório</p>
@@ -337,23 +354,6 @@ function Index() {
           <p className="text-[15px] leading-relaxed text-muted-foreground">
             <span className="text-foreground">Atendimento individual, R$ 220,00.</span>{" "}
             <span className="text-gold">Duração:</span> 1h30.{
-      {/* Como funciona */}
-      <section className="mx-auto max-w-4xl px-6 py-16">
-        <p className="eyebrow">Como funciona</p>
-        <h2 className="mt-3 text-3xl sm:text-4xl">Do pedido à consulta</h2>
-        <ol className="mt-10 grid gap-5 sm:grid-cols-2">
-          {passos.map((p, i) => (
-            <li key={p.titulo} className="panel rounded-xl p-6">
-              <span className="font-display text-3xl text-gold/70">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="mt-2 text-xl">{p.titulo}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.texto}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
       {/* Serviços */}
       <section className="mx-auto max-w-5xl px-6 py-16">
         <p className="eyebrow">Serviços</p>
