@@ -245,11 +245,10 @@ function Index() {
         .filter((linha) => linha !== null)
         .join("\n");
 
-      const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagemWhatsapp)}`;
+      const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMERO}&text=${encodeURIComponent(mensagemWhatsapp)}`;
       setLinkWhatsapp(url);
-      if (janelaWhatsapp) {
-        janelaWhatsapp.location.href = url;
-      }
+      window.open(url, "_blank", "noopener,noreferrer");
+      janelaWhatsapp?.close();
 
       setNome(pedido.nome.split(" ")[0] ?? "");
       setEnviado(true);
