@@ -12,7 +12,7 @@ import { UFS, validarPedido, type ErroValidacao, type PedidoInput } from "@/lib/
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.13";
+const SITE_VERSION = "1.5.14";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -278,8 +278,11 @@ function Index() {
 
       const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMERO}&text=${encodeURIComponent(mensagemWhatsapp)}`;
       setLinkWhatsapp(url);
-      window.open(url, "_blank", "noopener,noreferrer");
-      janelaWhatsapp?.close();
+      // Atualiza a aba já aberta no clique, em vez de abrir uma nova: o
+      // navegador só deixa a aba ganhar foco quando é a mesma do gesto do clique.
+      if (janelaWhatsapp) {
+        janelaWhatsapp.location.replace(url);
+      }
 
       setNome(pedidoPendente.nome.split(" ")[0] ?? "");
       setEtapa("sucesso");
