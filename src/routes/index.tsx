@@ -292,6 +292,28 @@ function Index() {
         </div>
       </section>
 
+      {/* Sobre */}
+      <section className="mx-auto max-w-3xl px-6 py-16">
+        <p className="eyebrow">Sobre</p>
+        <h2 className="mt-3 text-3xl sm:text-4xl">Quem lê o seu mapa</h2>
+        <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
+          <p>
+            [Texto de exemplo — substitua pelo seu.] Sou astróloga e estudo o céu há alguns anos,
+            com formação em astrologia tradicional e contemporânea. Meu trabalho nasce da vontade de
+            traduzir o simbolismo dos astros em algo concreto, que caiba na vida real de quem me
+            procura.
+          </p>
+          <p>
+            Não trabalho com relatórios prontos nem com interpretações geradas por programas. Cada
+            mapa é calculado, estudado e escrito por mim, respeitando a história de quem está do
+            outro lado. Por isso atendo poucas pessoas por vez.
+          </p>
+          <p className="text-foreground/80">
+            — Astróloga responsável, <span className="text-gold">@exaltavenus</span>
+          </p>
+        </div>
+      </section>
+
       {/* Atendimento pós-relatório */}
       <section className="mx-auto max-w-3xl px-6 py-16">
         <p className="eyebrow">Atendimento pós-relatório</p>
@@ -315,28 +337,6 @@ function Index() {
           <p className="text-[15px] leading-relaxed text-muted-foreground">
             <span className="text-foreground">Atendimento individual, R$ 220,00.</span>{" "}
             <span className="text-gold">Duração:</span> 1h30.{
-      {/* Sobre */}
-      <section className="mx-auto max-w-3xl px-6 py-16">
-        <p className="eyebrow">Sobre</p>
-        <h2 className="mt-3 text-3xl sm:text-4xl">Quem lê o seu mapa</h2>
-        <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
-          <p>
-            [Texto de exemplo — substitua pelo seu.] Sou astróloga e estudo o céu há alguns anos,
-            com formação em astrologia tradicional e contemporânea. Meu trabalho nasce da vontade de
-            traduzir o simbolismo dos astros em algo concreto, que caiba na vida real de quem me
-            procura.
-          </p>
-          <p>
-            Não trabalho com relatórios prontos nem com interpretações geradas por programas. Cada
-            mapa é calculado, estudado e escrito por mim, respeitando a história de quem está do
-            outro lado. Por isso atendo poucas pessoas por vez.
-          </p>
-          <p className="text-foreground/80">
-            — Astróloga responsável, <span className="text-gold">@exaltavenus</span>
-          </p>
-        </div>
-      </section>
-
       {/* Como funciona */}
       <section className="mx-auto max-w-4xl px-6 py-16">
         <p className="eyebrow">Como funciona</p>
