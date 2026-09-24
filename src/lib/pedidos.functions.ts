@@ -23,6 +23,7 @@ export const registrarPedido = createServerFn({ method: "POST" })
         estado: data.estado,
         pais: data.pais,
         mensagem: data.mensagem,
+        consentimento: data.consentimento,
       });
 
     if (error) {

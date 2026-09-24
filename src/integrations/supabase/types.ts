@@ -17,13 +17,12 @@ export type Database = {
       pedidos: {
         Row: {
           cidade: string
+          consentimento: boolean
           created_at: string
           email: string
           enviado_em: string
           estado: string
-          genero: string | null
           hora: string | null
-          hora_desconhecida: boolean
           id: string
           mensagem: string | null
           nascimento: string
@@ -34,13 +33,12 @@ export type Database = {
         }
         Insert: {
           cidade: string
+          consentimento: boolean
           created_at?: string
           email: string
           enviado_em?: string
           estado: string
-          genero?: string | null
           hora?: string | null
-          hora_desconhecida?: boolean
           id?: string
           mensagem?: string | null
           nascimento: string
@@ -51,13 +49,12 @@ export type Database = {
         }
         Update: {
           cidade?: string
+          consentimento?: boolean
           created_at?: string
           email?: string
           enviado_em?: string
           estado?: string
-          genero?: string | null
           hora?: string | null
-          hora_desconhecida?: boolean
           id?: string
           mensagem?: string | null
           nascimento?: string
