@@ -12,7 +12,7 @@ import { UFS, validarPedido, type ErroValidacao, type PedidoInput } from "@/lib/
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.15";
+const SITE_VERSION = "1.5.16";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -21,6 +21,16 @@ const WHATSAPP_NUMERO = "5511991164433";
 // Tentativas silenciosas de registro no banco após a confirmação de pagamento.
 const TENTATIVAS_REGISTRO = 3;
 const INTERVALO_ENTRE_TENTATIVAS_MS = 700;
+
+// Abre o WhatsApp numa janela separada (não aba) ocupando a metade direita
+// da tela, calculada a partir do tamanho disponível da tela do usuário.
+function abrirJanelaWhatsappMetadeDireita(url: string): Window | null {
+  const largura = Math.round(window.screen.availWidth / 2);
+  const altura = window.screen.availHeight;
+  const esquerda = window.screen.availWidth - largura;
+  const features = `width=${largura},height=${altura},left=${esquerda},top=0`;
+  return window.open(url, "_blank", features);
+}
 
 // Converte "aaaa-mm-dd" (formato do <input type="date">) para "dd-mm-aaaa".
 function formatarDataBr(data: string): string {
@@ -244,7 +254,7 @@ function Index() {
 
     // Abre a janela do WhatsApp já no clique, para não ser bloqueada pelo
     // navegador após o await do registro no banco.
-    const janelaWhatsapp = window.open("", "_blank");
+    const janelaWhatsapp = abrirJanelaWhatsappMetadeDireita("");
 
     try {
       // Só agora o pedido é registrado no banco, já vinculado à confirmação
@@ -474,6 +484,10 @@ function Index() {
           href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMERO}&text=${encodeURIComponent(
             "Olá, Luciana! Recebi meu relatório de Mapa Natal e gostaria de saber sobre o atendimento individual.",
           )}`}
+          onClick={(evento) => {
+            evento.preventDefault();
+            abrirJanelaWhatsappMetadeDireita(evento.currentTarget.href);
+          }}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-8 inline-flex w-fit items-center justify-center rounded-full bg-gradient-to-r from-gold-soft to-gold px-9 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.03]"
@@ -900,6 +914,10 @@ function Index() {
           </a>
           <a
             href="https://wa.me/5511991164433"
+            onClick={(evento) => {
+              evento.preventDefault();
+              abrirJanelaWhatsappMetadeDireita(evento.currentTarget.href);
+            }}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-gold hover:underline"
