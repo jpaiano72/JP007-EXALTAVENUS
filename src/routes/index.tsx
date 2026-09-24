@@ -5,7 +5,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.8";
+const SITE_VERSION = "1.4.9";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -292,6 +292,29 @@ function Index() {
         </div>
       </section>
 
+      {/* Atendimento pós-relatório */}
+      <section className="mx-auto max-w-3xl px-6 py-16">
+        <p className="eyebrow">Atendimento pós-relatório</p>
+        <h2 className="mt-3 text-3xl sm:text-4xl">Quer conversar sobre sua leitura?</h2>
+        <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
+          <p>
+            Seu relatório reúne uma análise individualizada do seu mapa natal. Mas algumas reflexões
+            podem despertar novas perguntas ou trazer à tona temas que você gostaria de explorar com
+            mais profundidade.
+          </p>
+          <p>
+            Se sentir vontade de conversar sobre o que encontrou no seu mapa, podemos agendar um
+            atendimento individual.
+          </p>
+          <p>
+            Será um espaço para esclarecer dúvidas, aprofundar questões específicas e relacionar a
+            interpretação astrológica às suas próprias experiências.
+          </p>
+        </div>
+        <div className="panel mt-8 rounded-xl p-6 sm:p-8">
+          <p className="text-[15px] leading-relaxed text-muted-foreground">
+            <span className="text-foreground">Atendimento individual, R$ 220,00.</span>{" "}
+            <span className="text-gold">Duração:</span> 1h30.{
       {/* Sobre */}
       <section className="mx-auto max-w-3xl px-6 py-16">
         <p className="eyebrow">Sobre</p>
