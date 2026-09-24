@@ -5,7 +5,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.6";
+const SITE_VERSION = "1.4.7";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -249,6 +249,44 @@ function Index() {
           Conheça seu Mapa Natal
         </a>
       </header>
+
+      {/* Mapa Natal */}
+      <section className="mx-auto max-w-3xl px-6 py-16">
+        <p className="eyebrow">Mapa Natal</p>
+        <h2 className="mt-3 text-3xl sm:text-4xl">
+          Um olhar sobre quem você é e sobre o que pode desenvolver.
+        </h2>
+        <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
+          <p>
+            O mapa natal é um retrato simbólico do céu no momento do seu nascimento. Sua
+            interpretação permite explorar características da personalidade, compreender padrões de
+            comportamento e reconhecer recursos e desafios que fazem parte da sua maneira de viver.
+          </p>
+          <p>
+            Nesta leitura, vamos além das características de cada signo. A análise considera as
+            relações entre os diferentes elementos do seu mapa para construir uma visão integrada e
+            individualizada.
+          </p>
+          <p>
+            O resultado é um relatório que convida você a olhar para si com mais clareza, reconhecer
+            suas potencialidades e refletir sobre seus próprios caminhos de desenvolvimento.
+          </p>
+        </div>
+        <div className="panel mt-8 rounded-xl p-6 sm:p-8">
+          <p className="text-[15px] leading-relaxed text-muted-foreground">
+            <span className="text-foreground">O que você recebe:</span> um relatório individual em
+            PDF, organizado em cinco seções: Seu mapa em poucas palavras; Suas energias primordiais;
+            Sua personalidade; Seus desafios e recursos; Seus chamados de desenvolvimento.
+          </p>
+          <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
+            <span className="text-gold">Investimento:</span> R$ 220,00.{" "}
+            <span className="text-gold">Prazo de entrega:</span> até 7 dias úteis.{" "}
+            <span className="text-gold">Formato:</span> relatório escrito em PDF, enviado por
+            e-mail, WhatsApp ou ambos. O atendimento individual para conversar sobre a leitura pode
+            ser contratado separadamente.
+          </p>
+        </div>
+      </section>
 
       {/* Sobre */}
       <section className="mx-auto max-w-3xl px-6 py-16">
