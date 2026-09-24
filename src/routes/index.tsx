@@ -8,15 +8,37 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Instagram, Mail, MessageCircle } from "lucide-react";
-import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
+import { UFS, validarPedido, type ErroValidacao, type PedidoInput } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.10";
+const SITE_VERSION = "1.5.11";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
 const WHATSAPP_NUMERO = "5511991164433";
+
+// Tentativas silenciosas de registro no banco após a confirmação de pagamento.
+const TENTATIVAS_REGISTRO = 3;
+const INTERVALO_ENTRE_TENTATIVAS_MS = 700;
+
+async function tentarRegistrarPedido(pedido: PedidoInput): Promise<boolean> {
+  for (let tentativa = 1; tentativa <= TENTATIVAS_REGISTRO; tentativa++) {
+    try {
+      const resultado = await registrarPedido({ data: pedido });
+      if (resultado?.ok) return true;
+    } catch (err) {
+      console.error(
+        `[pedidos] Falha ao registrar pedido (tentativa ${tentativa}/${TENTATIVAS_REGISTRO}):`,
+        err,
+      );
+    }
+    if (tentativa < TENTATIVAS_REGISTRO) {
+      await new Promise((resolve) => setTimeout(resolve, INTERVALO_ENTRE_TENTATIVAS_MS));
+    }
+  }
+  return false;
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -117,10 +139,11 @@ const perguntasFrequentes = [
 ];
 
 function Index() {
-  const [enviado, setEnviado] = useState(false);
+  const [etapa, setEtapa] = useState<"formulario" | "pagamento" | "sucesso">("formulario");
   const [preferenciaEntrega, setPreferenciaEntrega] = useState<"E-mail" | "WhatsApp" | "Ambos">(
     "E-mail",
   );
+  const [pedidoPendente, setPedidoPendente] = useState<PedidoInput | null>(null);
   const [nome, setNome] = useState("");
   const [linkWhatsapp, setLinkWhatsapp] = useState("");
   const [registroFalhou, setRegistroFalhou] = useState(false);
@@ -128,6 +151,8 @@ function Index() {
   const [errosValidacao, setErrosValidacao] = useState<ErroValidacao[]>([]);
   const enviandoRef = useRef(false);
   const [enviando, setEnviando] = useState(false);
+  const confirmandoRef = useRef(false);
+  const [confirmando, setConfirmando] = useState(false);
 
   useEffect(() => {
     const primeiroCampo = errosValidacao.find((erro) => erro.campo)?.campo;
@@ -181,39 +206,64 @@ function Index() {
 
     enviandoRef.current = true;
     setEnviando(true);
-    setRegistroFalhou(false);
     setErroEnvio(false);
     setErrosValidacao([]);
 
+    try {
+      // Nada é registrado nem enviado ainda: o pedido fica em memória até a
+      // confirmação de pagamento, para vincular o registro ao Pix recebido.
+      // A validação acima já garantiu que os valores batem com o schema.
+      setPedidoPendente(pedido as unknown as PedidoInput);
+      setEtapa("pagamento");
+      window.scrollTo({
+        top: document.getElementById("formulario")?.offsetTop ?? 0,
+        behavior: "smooth",
+      });
+    } catch {
+      setErroEnvio(true);
+    } finally {
+      enviandoRef.current = false;
+      setEnviando(false);
+    }
+  }
+
+  async function handleConfirmarPagamento() {
+    if (!pedidoPendente || confirmandoRef.current) return;
+
+    confirmandoRef.current = true;
+    setConfirmando(true);
+    setRegistroFalhou(false);
+
+    // Abre a janela do WhatsApp já no clique, para não ser bloqueada pelo
+    // navegador após o await do registro no banco.
     const janelaWhatsapp = window.open("", "_blank");
 
     try {
-      // Salva no banco (Lovable Cloud) para ter um registro confiável do pedido.
-      // O pedido só conta como registrado quando o servidor confirma `ok`.
-      try {
-        const resultado = await registrarPedido({ data: pedido });
-        if (!resultado?.ok) {
-          throw new Error("Registro do pedido não confirmado pelo servidor.");
-        }
-      } catch (err) {
-        console.error("[pedidos] Falha ao registrar pedido:", err);
+      // Só agora o pedido é registrado no banco, já vinculado à confirmação
+      // de pagamento. Faz algumas tentativas silenciosas antes de desistir.
+      const registrado = await tentarRegistrarPedido(pedidoPendente);
+      if (!registrado) {
         setRegistroFalhou(true);
       }
 
       const mensagemWhatsapp = [
         "Olá! Vim pelo site e quero meu mapa astral.",
         "",
-        `Nome: ${pedido.nome}`,
-        pedido.preferenciaEntrega === "E-mail" || pedido.preferenciaEntrega === "Ambos"
-          ? `E-mail: ${pedido.email}`
+        `Nome: ${pedidoPendente.nome}`,
+        pedidoPendente.preferenciaEntrega === "E-mail" ||
+        pedidoPendente.preferenciaEntrega === "Ambos"
+          ? `E-mail: ${pedidoPendente.email}`
           : null,
-        pedido.preferenciaEntrega === "WhatsApp" || pedido.preferenciaEntrega === "Ambos"
-          ? `WhatsApp: ${pedido.whatsapp}`
+        pedidoPendente.preferenciaEntrega === "WhatsApp" ||
+        pedidoPendente.preferenciaEntrega === "Ambos"
+          ? `WhatsApp: ${pedidoPendente.whatsapp}`
           : null,
-        `Data de nascimento: ${pedido.nascimento}`,
-        `Hora de nascimento: ${pedido.hora}`,
-        `Cidade/Estado/País: ${pedido.cidade} - ${pedido.estado} - ${pedido.pais}`,
-        pedido.mensagem ? `Observações: ${pedido.mensagem}` : null,
+        `Data de nascimento: ${pedidoPendente.nascimento}`,
+        `Hora de nascimento: ${pedidoPendente.hora}`,
+        `Cidade/Estado/País: ${pedidoPendente.cidade} - ${pedidoPendente.estado} - ${pedidoPendente.pais}`,
+        pedidoPendente.mensagem ? `Observações: ${pedidoPendente.mensagem}` : null,
+        "",
+        "Já fiz o pagamento via Pix e vou enviar o comprovante aqui nesta conversa.",
       ]
         .filter((linha) => linha !== null)
         .join("\n");
@@ -223,8 +273,8 @@ function Index() {
       window.open(url, "_blank", "noopener,noreferrer");
       janelaWhatsapp?.close();
 
-      setNome(pedido.nome.split(" ")[0] ?? "");
-      setEnviado(true);
+      setNome(pedidoPendente.nome.split(" ")[0] ?? "");
+      setEtapa("sucesso");
       window.scrollTo({
         top: document.getElementById("formulario")?.offsetTop ?? 0,
         behavior: "smooth",
@@ -233,9 +283,17 @@ function Index() {
       janelaWhatsapp?.close();
       setErroEnvio(true);
     } finally {
-      enviandoRef.current = false;
-      setEnviando(false);
+      confirmandoRef.current = false;
+      setConfirmando(false);
     }
+  }
+
+  function handleNovaSolicitacao() {
+    setEtapa("formulario");
+    setPedidoPendente(null);
+    setRegistroFalhou(false);
+    setLinkWhatsapp("");
+    setNome("");
   }
 
   const inputClass =
@@ -447,7 +505,7 @@ function Index() {
           </p>
         </div>
 
-        {enviado ? (
+        {etapa === "sucesso" ? (
           <div className="panel mt-8 rounded-xl p-8 text-center" role="status" aria-live="polite">
             <p className="font-display text-3xl text-gold">
               {registroFalhou
@@ -475,10 +533,42 @@ function Index() {
             </p>
             <button
               type="button"
-              onClick={() => setEnviado(false)}
+              onClick={handleNovaSolicitacao}
               className="mt-6 text-sm text-gold underline-offset-4 hover:underline"
             >
               Enviar outra solicitação
+            </button>
+          </div>
+        ) : etapa === "pagamento" ? (
+          <div className="panel mt-8 rounded-xl p-8 text-center" role="status" aria-live="polite">
+            <p className="font-display text-3xl text-gold">
+              Você está quase lá{pedidoPendente ? `, ${pedidoPendente.nome.split(" ")[0]}` : ""}!
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              Falta só o pagamento para o seu pedido ser confirmado. Escaneie o QR Code abaixo ou
+              use a chave Pix para pagar, depois toque no botão para confirmar.
+            </p>
+            <img
+              src="/pix-qrcode.png"
+              alt="QR Code para pagamento via Pix"
+              className="mx-auto mt-6 h-56 w-56 rounded-lg border border-gold/20 bg-secondary/40 object-contain"
+            />
+            <p className="mt-6 font-display text-3xl text-gold">R$ 220,00</p>
+            {erroEnvio && (
+              <p
+                className="mt-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive-foreground"
+                role="alert"
+              >
+                Não foi possível preparar o envio. Tente novamente.
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={handleConfirmarPagamento}
+              disabled={confirmando}
+              className="mt-8 w-full rounded-full bg-gradient-to-r from-gold-soft to-gold px-8 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Confirmar pagamento e enviar comprovante
             </button>
           </div>
         ) : (
