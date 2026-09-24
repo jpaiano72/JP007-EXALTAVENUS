@@ -11,7 +11,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.2";
+const SITE_VERSION = "1.5.4";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -150,6 +150,9 @@ const perguntasFrequentes = [
 function Index() {
   const [enviado, setEnviado] = useState(false);
   const [horaDesconhecida, setHoraDesconhecida] = useState(false);
+  const [preferenciaEntrega, setPreferenciaEntrega] = useState<"E-mail" | "WhatsApp" | "Ambos">(
+    "E-mail",
+  );
   const [nome, setNome] = useState("");
   const [linkWhatsapp, setLinkWhatsapp] = useState("");
   const [registroFalhou, setRegistroFalhou] = useState(false);
@@ -186,7 +189,7 @@ function Index() {
 
     const pedido = {
       nome: String(dados.get("nome") || "").trim(),
-      genero: String(dados.get("genero") || "").trim(),
+      preferenciaEntrega,
       email: String(dados.get("email") || "").trim(),
       whatsapp: String(dados.get("whatsapp") || "").trim(),
       nascimento: String(dados.get("nascimento") || "").trim(),
@@ -233,9 +236,12 @@ function Index() {
         "Olá! Vim pelo site e quero meu mapa astral.",
         "",
         `Nome: ${pedido.nome}`,
-        `Gênero: ${pedido.genero}`,
-        `E-mail: ${pedido.email}`,
-        `WhatsApp: ${pedido.whatsapp}`,
+        pedido.preferenciaEntrega === "E-mail" || pedido.preferenciaEntrega === "Ambos"
+          ? `E-mail: ${pedido.email}`
+          : null,
+        pedido.preferenciaEntrega === "WhatsApp" || pedido.preferenciaEntrega === "Ambos"
+          ? `WhatsApp: ${pedido.whatsapp}`
+          : null,
         `Data de nascimento: ${pedido.nascimento}`,
         `Hora de nascimento: ${pedido.hora || "não sei a hora"}`,
         `Cidade/Estado: ${pedido.cidade} - ${pedido.estado}`,
@@ -441,7 +447,7 @@ function Index() {
       </section>
 
       {/* Perguntas frequentes */}
-      <section className="mx-auto max-w-3xl px-6 py-16">
+      <section id="faq" className="mx-auto max-w-3xl scroll-mt-8 px-6 py-16">
         <p className="eyebrow">Perguntas frequentes</p>
         <h2 className="mt-3 text-3xl sm:text-4xl">Dúvidas comuns</h2>
         <Accordion type="single" collapsible className="panel mt-8 rounded-xl px-6 sm:px-8">
@@ -466,6 +472,13 @@ function Index() {
       <section id="formulario" className="mx-auto max-w-2xl scroll-mt-8 px-6 py-16">
         <p className="eyebrow">Solicitação</p>
         <h2 className="mt-3 text-3xl sm:text-4xl">Peça sua leitura</h2>
+
+        <div className="panel mt-8 rounded-xl p-6 sm:p-8">
+          <p className="font-display text-xl text-gold">Seu Mapa Natal</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+            Relatório de Mapa Natal — R$ 220,00 — Entrega em PDF · Até 7 dias úteis.
+          </p>
+        </div>
 
         {enviado ? (
           <div className="panel mt-8 rounded-xl p-8 text-center" role="status" aria-live="polite">
@@ -533,35 +546,6 @@ function Index() {
               />
             </div>
 
-            <div>
-              <label className={labelClass} htmlFor="genero">
-                Gênero
-              </label>
-              <select
-                id="genero"
-                name="genero"
-                defaultValue="Prefiro não informar"
-                className={inputClass}
-                aria-invalid={campoComErro("genero")}
-              >
-                <option value="Prefiro não informar" className="bg-card">
-                  Prefiro não informar
-                </option>
-                <option value="Não binário" className="bg-card">
-                  Não binário
-                </option>
-                <option value="Outro" className="bg-card">
-                  Outro
-                </option>
-                <option value="Masculino" className="bg-card">
-                  Masculino
-                </option>
-                <option value="Feminino" className="bg-card">
-                  Feminino
-                </option>
-              </select>
-            </div>
-
             <p
               id="dados-aviso"
               className="rounded-md border border-gold/25 bg-secondary/40 p-3 text-xs leading-relaxed text-muted-foreground"
@@ -576,41 +560,72 @@ function Index() {
             </p>
 
             <div>
-              <label className={labelClass} htmlFor="email">
-                E-mail
+              <label className={labelClass} htmlFor="preferenciaEntrega">
+                Preferência de entrega
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
+              <select
+                id="preferenciaEntrega"
+                name="preferenciaEntrega"
                 required
-                maxLength={160}
-                pattern="[^@\s]+@[^@\s]+\.[A-Za-z]{2,}"
-                title="Informe um e-mail válido, com domínio completo (ex.: voce@email.com)."
+                value={preferenciaEntrega}
+                onChange={(e) =>
+                  setPreferenciaEntrega(e.target.value as "E-mail" | "WhatsApp" | "Ambos")
+                }
                 className={inputClass}
-                placeholder="voce@email.com"
-                aria-describedby="dados-aviso"
-                aria-invalid={campoComErro("email")}
-              />
+                aria-invalid={campoComErro("preferenciaEntrega")}
+              >
+                <option value="E-mail" className="bg-card">
+                  E-mail
+                </option>
+                <option value="WhatsApp" className="bg-card">
+                  WhatsApp
+                </option>
+                <option value="Ambos" className="bg-card">
+                  Ambos
+                </option>
+              </select>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
+            {(preferenciaEntrega === "E-mail" || preferenciaEntrega === "Ambos") && (
               <div>
-                <label className={labelClass} htmlFor="whatsapp">
-                  WhatsApp
+                <label className={labelClass} htmlFor="email">
+                  E-mail
                 </label>
                 <input
-                  id="whatsapp"
-                  name="whatsapp"
+                  id="email"
+                  name="email"
+                  type="email"
                   required
-                  maxLength={25}
+                  maxLength={160}
+                  pattern="[^@\s]+@[^@\s]+\.[A-Za-z]{2,}"
+                  title="Informe um e-mail válido, com domínio completo (ex.: voce@email.com)."
                   className={inputClass}
-                  placeholder="(11) 90000-0000"
+                  placeholder="voce@email.com"
                   aria-describedby="dados-aviso"
-                  aria-invalid={campoComErro("whatsapp")}
+                  aria-invalid={campoComErro("email")}
                 />
               </div>
-            </div>
+            )}
+
+            {(preferenciaEntrega === "WhatsApp" || preferenciaEntrega === "Ambos") && (
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label className={labelClass} htmlFor="whatsapp">
+                    WhatsApp
+                  </label>
+                  <input
+                    id="whatsapp"
+                    name="whatsapp"
+                    required
+                    maxLength={25}
+                    className={inputClass}
+                    placeholder="(11) 90000-0000"
+                    aria-describedby="dados-aviso"
+                    aria-invalid={campoComErro("whatsapp")}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
@@ -655,7 +670,13 @@ function Index() {
             <p className="rounded-md border border-gold/25 bg-secondary/40 p-3 text-xs leading-relaxed text-muted-foreground">
               ✦ A hora exata é essencial para a precisão do mapa: ela define o Ascendente e as
               casas. Você encontra esse dado na certidão de nascimento ou na declaração de nascido
-              vivo do hospital. Se não souber, seguimos com uma leitura adaptada.
+              vivo do hospital. Se não souber, seguimos com uma leitura adaptada. O horário de
+              nascimento é essencial para a elaboração do mapa. Se você não souber essa informação,
+              consulte nosso{" "}
+              <a href="#faq" className="text-gold underline-offset-4 hover:underline">
+                FAQ
+              </a>{" "}
+              antes de realizar a compra.
             </p>
 
             <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_120px]">
