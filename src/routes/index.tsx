@@ -5,7 +5,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.7";
+const SITE_VERSION = "1.4.8";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -77,20 +77,24 @@ const servicos = [
 
 const passos = [
   {
-    titulo: "Preencha o formulário",
-    texto: "Envie seus dados de nascimento e conte o que você busca nesta leitura.",
+    titulo: "Escolha sua leitura",
+    texto:
+      "Solicite seu Mapa Natal e preencha os dados de nascimento necessários para a análise.",
   },
   {
-    titulo: "Converse comigo e alinhe a leitura",
-    texto: "Entro em contato pelo WhatsApp para entender o que você busca e combinar os próximos passos.",
+    titulo: "Confirme sua compra",
+    texto:
+      "Faça o pagamento por Pix. Após a confirmação, entrarei em contato para confirmar o recebimento do pedido e o início da elaboração do seu relatório.",
   },
   {
-    titulo: "Receba sua leitura personalizada",
-    texto: "Nada é gerado automaticamente: eu estudo o seu mapa e escrevo a interpretação.",
+    titulo: "Receba seu relatório",
+    texto:
+      "Seu mapa será analisado individualmente e você receberá o relatório em PDF, em até 7 dias úteis, por e-mail, WhatsApp ou ambos, conforme sua preferência.",
   },
   {
-    titulo: "Faça o pagamento e receba o material",
-    texto: "Após a leitura, você realiza o pagamento e recebe o material completo para consultar com calma.",
+    titulo: "Se quiser, podemos conversar",
+    texto:
+      "Depois de receber o relatório, você poderá contratar um atendimento individual para esclarecer dúvidas e aprofundar os temas que mais despertaram seu interesse.",
   },
 ];
 
