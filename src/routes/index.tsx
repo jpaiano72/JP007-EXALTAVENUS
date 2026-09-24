@@ -12,7 +12,7 @@ import { UFS, validarPedido, type ErroValidacao, type PedidoInput } from "@/lib/
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.11";
+const SITE_VERSION = "1.5.12";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -781,21 +781,6 @@ function Index() {
                 className={inputClass}
                 placeholder="Brasil"
                 aria-invalid={campoComErro("pais")}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass} htmlFor="mensagem">
-                O que você busca nesta leitura?
-              </label>
-              <textarea
-                id="mensagem"
-                name="mensagem"
-                rows={4}
-                maxLength={1000}
-                className={inputClass}
-                placeholder="Conte um pouco do seu momento, dúvidas ou temas que gostaria de olhar com mais cuidado."
-                aria-invalid={campoComErro("mensagem")}
               />
             </div>
 
