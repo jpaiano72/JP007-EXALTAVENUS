@@ -11,7 +11,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.10";
+const SITE_VERSION = "1.5.0";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -439,45 +439,6 @@ function Index() {
             </AccordionItem>
           ))}
         </Accordion>
-      </section>
-
-      {/* Serviços */}
-      <section className="mx-auto max-w-5xl px-6 py-16">
-        <p className="eyebrow">Serviços</p>
-        <h2 className="mt-3 text-3xl sm:text-4xl">Tipos de leitura</h2>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {servicos.map((s) => (
-            <article
-              key={s.nome}
-              className={`panel flex flex-col rounded-xl p-6 ${
-                s.destaque ? "border-gold/60 shadow-[var(--shadow-halo)]" : ""
-              }`}
-            >
-              {s.destaque && (
-                <span className="mb-3 w-fit rounded-full border border-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-gold">
-                  Mais pedido
-                </span>
-              )}
-              <h3 className="text-2xl">{s.nome}</h3>
-              <p className="mt-2 font-display text-xl text-gold">{s.preco}</p>
-              <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-                {s.descricao}
-              </p>
-              <a
-                href="#formulario"
-                className="mt-6 inline-flex w-fit items-center text-sm tracking-wide text-gold underline-offset-4 hover:underline"
-              >
-                Solicitar leitura →
-              </a>
-            </article>
-          ))}
-        </div>
-        <a
-          href="#formulario"
-          className="mx-auto mt-10 flex w-fit items-center justify-center rounded-full bg-gradient-to-r from-gold-soft to-gold px-9 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.03]"
-        >
-          Quero meu mapa
-        </a>
       </section>
 
       {/* Formulário */}
