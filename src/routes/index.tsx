@@ -5,7 +5,7 @@ import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.5";
+const SITE_VERSION = "1.4.6";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -230,18 +230,24 @@ function Index() {
 
       {/* Hero */}
       <header className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-6 py-16 text-center">
-        <p className="eyebrow">Astrologia · leituras autorais</p>
-        <h1 className="mt-6 text-5xl leading-[1.05] sm:text-7xl">
-          <span className="text-gradient-gold">exaltavenus</span>
+        <p className="text-gradient-gold text-xs font-medium uppercase tracking-[0.35em]">
+          exaltavenus
+        </p>
+        <h1 className="mt-6 text-4xl leading-[1.1] sm:text-6xl">
+          Seu mapa é único. Sua leitura também.
         </h1>
-        <p className="mx-auto mt-6 max-w-xl font-display text-xl italic leading-relaxed text-foreground/90 sm:text-2xl">
-          O céu do instante em que você nasceu guarda um mapa. Ler esse mapa é começar a se
-          reconhecer.
+        <p className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+          A astrologia oferece uma maneira de compreender quem somos, reconhecer nossos recursos e
+          olhar com mais consciência para nossos caminhos de desenvolvimento. Na Exalta Venus, cada
+          mapa é analisado individualmente, com profundidade e sensibilidade, e traduzido em uma
+          linguagem clara, para que você possa reconhecer a sua própria história na leitura.
         </p>
-        <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Cada leitura é interpretada à mão, uma a uma. Nada de textos automáticos: é o seu mapa,
-          estudado com tempo e atenção.
-        </p>
+        <a
+          href="#formulario"
+          className="mt-8 inline-flex w-fit items-center justify-center rounded-full bg-gradient-to-r from-gold-soft to-gold px-9 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.03]"
+        >
+          Conheça seu Mapa Natal
+        </a>
       </header>
 
       {/* Sobre */}
