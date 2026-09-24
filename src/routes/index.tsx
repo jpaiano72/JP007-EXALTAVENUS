@@ -1,11 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import stars from "@/assets/stars.jpg";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.4.9";
+const SITE_VERSION = "1.4.10";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -95,6 +101,49 @@ const passos = [
     titulo: "Se quiser, podemos conversar",
     texto:
       "Depois de receber o relatório, você poderá contratar um atendimento individual para esclarecer dúvidas e aprofundar os temas que mais despertaram seu interesse.",
+  },
+];
+
+const perguntasFrequentes = [
+  {
+    pergunta: "Preciso entender de astrologia para aproveitar a leitura?",
+    resposta:
+      "Não. O relatório é escrito em linguagem clara e acessível, mesmo para quem nunca teve contato com a astrologia. Os conceitos astrológicos são apresentados de forma contextualizada, para que você possa compreender a interpretação e relacioná-la às suas próprias experiências.",
+  },
+  {
+    pergunta: "Quais informações preciso fornecer?",
+    resposta:
+      "Seu nome, data, horário e cidade de nascimento, além de um contato, WhatsApp ou e-mail, para que eu possa confirmar seu pedido e encaminhar o relatório. Essas informações são necessárias para calcular e interpretar seu mapa natal e realizar a entrega.",
+  },
+  {
+    pergunta: "E se eu não souber meu horário de nascimento?",
+    resposta:
+      "O horário é essencial para determinar o Ascendente e a posição das casas astrológicas, elementos importantes da análise. Por isso, não realizo a leitura sem essa informação. Se você não souber seu horário, vale consultar sua certidão de nascimento ou buscar essa informação com familiares. Existem também astrólogos especializados em retificação do horário de nascimento, serviço que não ofereço atualmente.",
+  },
+  {
+    pergunta: "Como receberei meu relatório?",
+    resposta:
+      "Você receberá um arquivo PDF por e-mail, WhatsApp ou ambos, conforme sua preferência informada no momento da compra.",
+  },
+  {
+    pergunta: "Qual é o prazo de entrega?",
+    resposta:
+      "O relatório será entregue em até 7 dias úteis, contados a partir da confirmação do pagamento e do recebimento de todos os dados necessários.",
+  },
+  {
+    pergunta: "O relatório inclui previsões sobre o futuro?",
+    resposta:
+      "Não. A leitura do Mapa Natal tem uma abordagem voltada ao autoconhecimento. Ela explora características da personalidade, desafios, recursos e possibilidades de desenvolvimento, sem prever acontecimentos futuros.",
+  },
+  {
+    pergunta: "O atendimento individual está incluído no valor do relatório?",
+    resposta:
+      "Não. O relatório é um produto independente. Após recebê-lo, você poderá contratar um atendimento individual de 1h30, presencial ou virtual, para esclarecer dúvidas ou aprofundar temas específicos. O atendimento é opcional e custa R$ 220,00.",
+  },
+  {
+    pergunta: "Como faço o pagamento?",
+    resposta:
+      "O pagamento é realizado por Pix, após o preenchimento dos dados necessários para a elaboração do relatório. Seu pedido será confirmado após a identificação do pagamento.",
   },
 ];
 
@@ -368,6 +417,28 @@ function Index() {
         >
           Quero agendar uma conversa
         </a>
+      </section>
+
+      {/* Perguntas frequentes */}
+      <section className="mx-auto max-w-3xl px-6 py-16">
+        <p className="eyebrow">Perguntas frequentes</p>
+        <h2 className="mt-3 text-3xl sm:text-4xl">Dúvidas comuns</h2>
+        <Accordion type="single" collapsible className="panel mt-8 rounded-xl px-6 sm:px-8">
+          {perguntasFrequentes.map((item, indice) => (
+            <AccordionItem
+              key={item.pergunta}
+              value={`pergunta-${indice + 1}`}
+              className="border-gold/20 last:border-b-0"
+            >
+              <AccordionTrigger className="py-5 text-left text-base text-foreground hover:text-gold hover:no-underline sm:text-lg">
+                {item.pergunta}
+              </AccordionTrigger>
+              <AccordionContent className="pb-5 pr-6 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
+                {item.resposta}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </section>
 
       {/* Serviços */}
