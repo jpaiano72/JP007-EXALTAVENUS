@@ -7,11 +7,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Instagram, Mail, MessageCircle } from "lucide-react";
 import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.8";
+const SITE_VERSION = "1.5.9";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
@@ -20,7 +21,7 @@ const WHATSAPP_NUMERO = "5511991164433";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "exaltavenus | Mapa astral personalizado, feito à mão" },
+      { title: "EXALTAVENUS | Mapa astral personalizado, feito à mão" },
       {
         name: "description",
         content:
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:title",
-        content: "exaltavenus | Mapa astral personalizado, feito à mão",
+        content: "EXALTAVENUS | Mapa astral personalizado, feito à mão",
       },
       {
         property: "og:description",
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:url", content: "https://exaltavenus.lovable.app/" },
       { property: "og:image", content: "https://exaltavenus.lovable.app/og-image.jpg" },
-      { name: "twitter:title", content: "exaltavenus | Mapa astral personalizado, feito à mão" },
+      { name: "twitter:title", content: "EXALTAVENUS | Mapa astral personalizado, feito à mão" },
       {
         name: "twitter:description",
         content:
@@ -53,8 +54,7 @@ export const Route = createFileRoute("/")({
 const passos = [
   {
     titulo: "Escolha sua leitura",
-    texto:
-      "Solicite seu Mapa Natal e preencha os dados de nascimento necessários para a análise.",
+    texto: "Solicite seu Mapa Natal e preencha os dados de nascimento necessários para a análise.",
   },
   {
     titulo: "Confirme sua compra",
@@ -241,8 +241,7 @@ function Index() {
   const inputClass =
     "w-full rounded-md border border-input bg-secondary/50 px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-gold focus:ring-1 focus:ring-ring";
   const labelClass = "mb-1.5 block text-xs uppercase tracking-[0.18em] text-muted-foreground";
-  const campoComErro = (campo: string) =>
-    errosValidacao.some((erro) => erro.campo === campo);
+  const campoComErro = (campo: string) => errosValidacao.some((erro) => erro.campo === campo);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
@@ -256,14 +255,14 @@ function Index() {
       {/* Hero */}
       <header className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-6 py-16 text-center">
         <p className="text-gradient-gold text-xs font-medium uppercase tracking-[0.35em]">
-          exaltavenus
+          EXALTAVENUS
         </p>
         <h1 className="mt-6 text-4xl leading-[1.1] sm:text-6xl">
           Seu mapa é único. Sua leitura também.
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
           A astrologia oferece uma maneira de compreender quem somos, reconhecer nossos recursos e
-          olhar com mais consciência para nossos caminhos de desenvolvimento. Na Exalta Venus, cada
+          olhar com mais consciência para nossos caminhos de desenvolvimento. Na EXALTAVENUS, cada
           mapa é analisado individualmente, com profundidade e sensibilidade, e traduzido em uma
           linguagem clara, para que você possa reconhecer a sua própria história na leitura.
         </p>
@@ -324,9 +323,9 @@ function Index() {
             longo do tempo, encontrou novos caminhos no estudo da filosofia e da astrologia.
           </p>
           <p>
-            À primeira vista, são áreas bastante diferentes. Para mim, elas se encontram no interesse
-            por compreender como as coisas funcionam, reconhecer padrões e estabelecer relações entre
-            elementos que, isoladamente, nem sempre fazem sentido.
+            À primeira vista, são áreas bastante diferentes. Para mim, elas se encontram no
+            interesse por compreender como as coisas funcionam, reconhecer padrões e estabelecer
+            relações entre elementos que, isoladamente, nem sempre fazem sentido.
           </p>
           <p>
             Sempre gostei de investigar, organizar ideias e transformar complexidade em clareza. Na
@@ -340,19 +339,20 @@ function Index() {
             da vida que estamos vivendo. É essa perspectiva que orienta meu trabalho.
           </p>
           <p>
-            Cada mapa é analisado individualmente, com atenção às particularidades de sua configuração.
-            Procuro integrar o conhecimento astrológico a uma interpretação clara, sensível e
-            fundamentada, que ajude a reconhecer características, compreender tensões e identificar
-            possibilidades de desenvolvimento.
+            Cada mapa é analisado individualmente, com atenção às particularidades de sua
+            configuração. Procuro integrar o conhecimento astrológico a uma interpretação clara,
+            sensível e fundamentada, que ajude a reconhecer características, compreender tensões e
+            identificar possibilidades de desenvolvimento.
           </p>
           <p>
-            Não vejo o mapa como uma definição de quem alguém é ou de quem deverá se tornar. Vejo nele
-            uma ferramenta de investigação e reflexão, capaz de ampliar nossa compreensão sobre nós
-            mesmos.
+            Não vejo o mapa como uma definição de quem alguém é ou de quem deverá se tornar. Vejo
+            nele uma ferramenta de investigação e reflexão, capaz de ampliar nossa compreensão sobre
+            nós mesmos.
           </p>
           <p>
             Meu propósito é oferecer uma leitura que faça sentido para quem a recebe, não apenas
-            durante a leitura, mas também nos momentos em que a vida convida a olhar para si novamente.
+            durante a leitura, mas também nos momentos em que a vida convida a olhar para si
+            novamente.
           </p>
         </div>
       </section>
@@ -456,8 +456,8 @@ function Index() {
             </p>
             {registroFalhou && (
               <p className="mt-4 text-sm leading-relaxed text-gold-soft">
-                O pedido foi preparado, mas não consegui confirmar o registro. Envie a mensagem
-                pelo WhatsApp para garantir o atendimento.
+                O pedido foi preparado, mas não consegui confirmar o registro. Envie a mensagem pelo
+                WhatsApp para garantir o atendimento.
               </p>
             )}
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -624,8 +624,8 @@ function Index() {
             </div>
 
             <p className="rounded-md border border-gold/25 bg-secondary/40 p-3 text-xs leading-relaxed text-muted-foreground">
-              O horário de nascimento é essencial para a elaboração do mapa. Se você não souber
-              essa informação, consulte nosso{" "}
+              O horário de nascimento é essencial para a elaboração do mapa. Se você não souber essa
+              informação, consulte nosso{" "}
               <a href="#faq" className="text-gold underline-offset-4 hover:underline">
                 FAQ
               </a>{" "}
@@ -760,9 +760,9 @@ function Index() {
           <div>
             <h3 className="text-xl text-foreground">Para que usamos</h3>
             <p className="mt-2">
-              Usamos essas informações para entender sua solicitação, preparar a leitura, entrar
-              em contato e enviar a mensagem inicial pelo WhatsApp. Não usamos os dados para venda
-              de listas ou publicidade de terceiros.
+              Usamos essas informações para entender sua solicitação, preparar a leitura, entrar em
+              contato e enviar a mensagem inicial pelo WhatsApp. Não usamos os dados para venda de
+              listas ou publicidade de terceiros.
             </p>
           </div>
           <div>
@@ -770,7 +770,7 @@ function Index() {
             <p className="mt-2">
               O pedido é enviado ao Supabase/Lovable Cloud para registro interno e os dados
               necessários ao atendimento são compartilhados com o WhatsApp quando você prossegue
-              pelo botão de contato. O acesso ao registro é restrito à operação da exaltavenus.
+              pelo botão de contato. O acesso ao registro é restrito à operação da EXALTAVENUS.
             </p>
           </div>
           <div>
@@ -797,19 +797,79 @@ function Index() {
         </div>
       </section>
 
+      {/* Condições de Compra */}
+      <section
+        id="condicoes-de-compra"
+        className="mx-auto max-w-3xl scroll-mt-8 px-6 py-16 text-center"
+      >
+        <p className="eyebrow">Condições de Compra</p>
+        <h2 className="mt-3 text-3xl sm:text-4xl">Em breve</h2>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Estamos preparando as condições de compra completas da EXALTAVENUS. Em caso de dúvidas
+          sobre seu pedido, entre em contato pelos canais indicados no rodapé.
+        </p>
+      </section>
+
       {/* Rodapé */}
       <footer className="mt-10 border-t border-border/60 px-6 py-10 text-center">
-        <p className="font-display text-2xl text-gradient-gold">exaltavenus</p>
-        <a
-          href="https://instagram.com/exaltavenus"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-block text-sm tracking-wide text-muted-foreground underline-offset-4 hover:text-gold hover:underline"
-        >
-          @exaltavenus no Instagram
-        </a>
+        <p className="text-xs italic tracking-wide text-muted-foreground/80">
+          Astrologia como ferramenta de desenvolvimento pessoal.
+        </p>
+
+        <p className="mt-4 text-sm tracking-wide text-muted-foreground">
+          <span className="font-display text-gradient-gold">EXALTAVENUS</span>
+          <span className="mx-2 text-muted-foreground/50">·</span>
+          <a href="#privacidade" className="underline-offset-4 hover:text-gold hover:underline">
+            Política de Privacidade
+          </a>
+          <span className="mx-2 text-muted-foreground/50">·</span>
+          <a
+            href="#condicoes-de-compra"
+            className="underline-offset-4 hover:text-gold hover:underline"
+          >
+            Condições de Compra
+          </a>
+        </p>
+
+        <div className="mt-5 flex flex-col items-center gap-2 text-sm text-muted-foreground sm:flex-row sm:justify-center sm:gap-6">
+          <a
+            href="https://instagram.com/exaltavenus"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-gold hover:underline"
+          >
+            <Instagram className="h-4 w-4" aria-hidden />
+            @exaltavenus
+          </a>
+          <a
+            href="mailto:exaltadavenus@gmail.com"
+            className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-gold hover:underline"
+          >
+            <Mail className="h-4 w-4" aria-hidden />
+            exaltadavenus@gmail.com
+          </a>
+          <a
+            href="https://wa.me/5511991164433"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-gold hover:underline"
+          >
+            <MessageCircle className="h-4 w-4" aria-hidden />
+            (11) 99116-4433
+          </a>
+        </div>
+
+        <p className="mx-auto mt-5 max-w-xl text-xs leading-relaxed text-muted-foreground/70">
+          Seus dados serão utilizados para elaborar e entregar seu relatório, confirmar o pagamento
+          e entrar em contato sobre seu pedido. Para saber mais, consulte nossa{" "}
+          <a href="#privacidade" className="underline-offset-4 hover:text-gold hover:underline">
+            Política de Privacidade
+          </a>
+          .
+        </p>
+
         <p className="mt-4 text-xs text-muted-foreground/70">
-          Leituras astrológicas feitas à mão · Todos os direitos reservados
+          © EXALTAVENUS. Todos os direitos reservados.
         </p>
       </footer>
     </div>
