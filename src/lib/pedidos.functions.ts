@@ -14,9 +14,9 @@ export const registrarPedido = createServerFn({ method: "POST" })
       .from("pedidos")
       .insert({
         nome: data.nome,
-        genero: data.genero,
         email: data.email,
         whatsapp: data.whatsapp,
+        preferencia_entrega: data.preferenciaEntrega,
         nascimento: data.nascimento,
         hora: data.hora,
         hora_desconhecida: data.horaDesconhecida,
