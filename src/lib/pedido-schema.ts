@@ -69,6 +69,11 @@ export const pedidoSchema = z
       .max(1000, "O campo de observações deve ter no máximo 1000 caracteres.")
       .optional()
       .default(""),
+    consentimento: z.literal(true, {
+      errorMap: () => ({
+        message: "É necessário concordar com a política de privacidade para continuar.",
+      }),
+    }),
   })
   .superRefine((pedido, contexto) => {
     if (pedido.preferenciaEntrega === "E-mail" || pedido.preferenciaEntrega === "Ambos") {
