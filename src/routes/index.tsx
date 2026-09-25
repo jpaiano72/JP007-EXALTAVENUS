@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import stars from "@/assets/stars.jpg";
 import {
   Accordion,
@@ -7,20 +7,61 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { UFS, validarPedido, type ErroValidacao } from "@/lib/pedido-schema";
+import { Instagram, Mail, MessageCircle } from "lucide-react";
+import { UFS, validarPedido, type ErroValidacao, type PedidoInput } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "1.5.3";
+const SITE_VERSION = "2.0.1";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
 const WHATSAPP_NUMERO = "5511991164433";
 
+// Tentativas silenciosas de registro no banco após a confirmação de pagamento.
+const TENTATIVAS_REGISTRO = 3;
+const INTERVALO_ENTRE_TENTATIVAS_MS = 700;
+
+// Abre o WhatsApp numa janela separada (não aba) ocupando a metade direita
+// da tela, calculada a partir do tamanho disponível da tela do usuário.
+function abrirJanelaWhatsappMetadeDireita(url: string): Window | null {
+  const largura = Math.round(window.screen.availWidth / 2);
+  const altura = window.screen.availHeight;
+  const esquerda = window.screen.availWidth - largura;
+  const features = `width=${largura},height=${altura},left=${esquerda},top=0`;
+  return window.open(url, "_blank", features);
+}
+
+// Converte "aaaa-mm-dd" (formato do <input type="date">) para "dd-mm-aaaa".
+function formatarDataBr(data: string): string {
+  const partes = data.split("-");
+  if (partes.length !== 3) return data;
+  const [ano, mes, dia] = partes;
+  return `${dia}-${mes}-${ano}`;
+}
+
+async function tentarRegistrarPedido(pedido: PedidoInput): Promise<boolean> {
+  for (let tentativa = 1; tentativa <= TENTATIVAS_REGISTRO; tentativa++) {
+    try {
+      const resultado = await registrarPedido({ data: pedido });
+      if (resultado?.ok) return true;
+    } catch (err) {
+      console.error(
+        `[pedidos] Falha ao registrar pedido (tentativa ${tentativa}/${TENTATIVAS_REGISTRO}):`,
+        err,
+      );
+    }
+    if (tentativa < TENTATIVAS_REGISTRO) {
+      await new Promise((resolve) => setTimeout(resolve, INTERVALO_ENTRE_TENTATIVAS_MS));
+    }
+  }
+  return false;
+}
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "exaltavenus | Mapa astral personalizado, feito à mão" },
+      { title: "EXALTAVENUS | Mapa astral personalizado, feito à mão" },
       {
         name: "description",
         content:
@@ -28,7 +69,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:title",
-        content: "exaltavenus | Mapa astral personalizado, feito à mão",
+        content: "EXALTAVENUS | Mapa astral personalizado, feito à mão",
       },
       {
         property: "og:description",
@@ -37,7 +78,7 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:url", content: "https://exaltavenus.lovable.app/" },
       { property: "og:image", content: "https://exaltavenus.lovable.app/og-image.jpg" },
-      { name: "twitter:title", content: "exaltavenus | Mapa astral personalizado, feito à mão" },
+      { name: "twitter:title", content: "EXALTAVENUS | Mapa astral personalizado, feito à mão" },
       {
         name: "twitter:description",
         content:
@@ -50,42 +91,10 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const servicos = [
-  {
-    nome: "Caminho de Marte",
-    preco: "Valor a definir",
-    descricao:
-      "A cada dois anos, Marte volta à posição exata em que estava quando você nasceu. Esse retorno abre um novo ciclo e mostra qual área da sua vida entra em movimento. Leitura personalizada do seu ciclo de Marte, com os marcos do período.",
-    destaque: true,
-  },
-  {
-    nome: "Mapa Astral Completo",
-    preco: "R$ 300",
-    descricao:
-      "Leitura completa do seu mapa natal: Sol, Lua, Ascendente, casas, planetas e aspectos. Você recebe o material interpretado à mão e uma consulta ao vivo para conversarmos sobre ele.",
-    destaque: false,
-  },
-  {
-    nome: "Revolução Solar",
-    preco: "Valor a definir",
-    descricao:
-      "A leitura do seu ano astrológico, de aniversário a aniversário: os temas em destaque, os ciclos que se abrem e os melhores momentos para agir.",
-    destaque: false,
-  },
-  {
-    nome: "Sinastria / Mapa do Casal",
-    preco: "Valor a definir",
-    descricao:
-      "A comparação entre dois mapas: encontros, atritos e potenciais da relação. Ideal para casais e também para parcerias de trabalho.",
-    destaque: false,
-  },
-];
-
 const passos = [
   {
     titulo: "Escolha sua leitura",
-    texto:
-      "Solicite seu Mapa Natal e preencha os dados de nascimento necessários para a análise.",
+    texto: "Solicite seu Mapa Natal e preencha os dados de nascimento necessários para a análise.",
   },
   {
     titulo: "Confirme sua compra",
@@ -148,11 +157,11 @@ const perguntasFrequentes = [
 ];
 
 function Index() {
-  const [enviado, setEnviado] = useState(false);
-  const [horaDesconhecida, setHoraDesconhecida] = useState(false);
+  const [etapa, setEtapa] = useState<"formulario" | "pagamento" | "sucesso">("formulario");
   const [preferenciaEntrega, setPreferenciaEntrega] = useState<"E-mail" | "WhatsApp" | "Ambos">(
-    "Ambos",
+    "E-mail",
   );
+  const [pedidoPendente, setPedidoPendente] = useState<PedidoInput | null>(null);
   const [nome, setNome] = useState("");
   const [linkWhatsapp, setLinkWhatsapp] = useState("");
   const [registroFalhou, setRegistroFalhou] = useState(false);
@@ -160,6 +169,8 @@ function Index() {
   const [errosValidacao, setErrosValidacao] = useState<ErroValidacao[]>([]);
   const enviandoRef = useRef(false);
   const [enviando, setEnviando] = useState(false);
+  const confirmandoRef = useRef(false);
+  const [confirmando, setConfirmando] = useState(false);
 
   useEffect(() => {
     const primeiroCampo = errosValidacao.find((erro) => erro.campo)?.campo;
@@ -193,12 +204,12 @@ function Index() {
       email: String(dados.get("email") || "").trim(),
       whatsapp: String(dados.get("whatsapp") || "").trim(),
       nascimento: String(dados.get("nascimento") || "").trim(),
-      hora: horaDesconhecida ? null : String(dados.get("hora") || "").trim(),
-      horaDesconhecida,
+      hora: String(dados.get("hora") || "").trim(),
       cidade: String(dados.get("cidade") || "").trim(),
       estado: String(dados.get("estado") || "").trim(),
-      tipo: String(dados.get("tipo") || "").trim(),
+      pais: String(dados.get("pais") || "").trim(),
       mensagem: String(dados.get("mensagem") || "").trim(),
+      consentimento: dados.get("consentimento") === "on",
       enviadoEm: new Date().toISOString(),
     };
 
@@ -213,48 +224,78 @@ function Index() {
 
     enviandoRef.current = true;
     setEnviando(true);
-    setRegistroFalhou(false);
     setErroEnvio(false);
     setErrosValidacao([]);
 
-    const janelaWhatsapp = window.open("", "_blank");
+    try {
+      // Nada é registrado nem enviado ainda: o pedido fica em memória até a
+      // confirmação de pagamento, para vincular o registro ao Pix recebido.
+      // A validação acima já garantiu que os valores batem com o schema.
+      setPedidoPendente(pedido as unknown as PedidoInput);
+      setEtapa("pagamento");
+      window.scrollTo({
+        top: document.getElementById("formulario")?.offsetTop ?? 0,
+        behavior: "smooth",
+      });
+    } catch {
+      setErroEnvio(true);
+    } finally {
+      enviandoRef.current = false;
+      setEnviando(false);
+    }
+  }
+
+  async function handleConfirmarPagamento() {
+    if (!pedidoPendente || confirmandoRef.current) return;
+
+    confirmandoRef.current = true;
+    setConfirmando(true);
+    setRegistroFalhou(false);
+
+    // Abre a janela do WhatsApp já no clique, para não ser bloqueada pelo
+    // navegador após o await do registro no banco.
+    const janelaWhatsapp = abrirJanelaWhatsappMetadeDireita("");
 
     try {
-      // Salva no banco (Lovable Cloud) para ter um registro confiável do pedido.
-      // O pedido só conta como registrado quando o servidor confirma `ok`.
-      try {
-        const resultado = await registrarPedido({ data: pedido });
-        if (!resultado?.ok) {
-          throw new Error("Registro do pedido não confirmado pelo servidor.");
-        }
-      } catch (err) {
-        console.error("[pedidos] Falha ao registrar pedido:", err);
+      // Só agora o pedido é registrado no banco, já vinculado à confirmação
+      // de pagamento. Faz algumas tentativas silenciosas antes de desistir.
+      const registrado = await tentarRegistrarPedido(pedidoPendente);
+      if (!registrado) {
         setRegistroFalhou(true);
       }
 
       const mensagemWhatsapp = [
         "Olá! Vim pelo site e quero meu mapa astral.",
         "",
-        `Nome: ${pedido.nome}`,
-        `Preferência de entrega: ${pedido.preferenciaEntrega}`,
-        pedido.email ? `E-mail: ${pedido.email}` : null,
-        pedido.whatsapp ? `WhatsApp: ${pedido.whatsapp}` : null,
-        `Data de nascimento: ${pedido.nascimento}`,
-        `Hora de nascimento: ${pedido.hora || "não sei a hora"}`,
-        `Cidade/Estado: ${pedido.cidade} - ${pedido.estado}`,
-        `Tipo de leitura: ${pedido.tipo}`,
-        pedido.mensagem ? `Observações: ${pedido.mensagem}` : null,
+        `Nome: ${pedidoPendente.nome}`,
+        pedidoPendente.preferenciaEntrega === "E-mail" ||
+        pedidoPendente.preferenciaEntrega === "Ambos"
+          ? `E-mail: ${pedidoPendente.email}`
+          : null,
+        pedidoPendente.preferenciaEntrega === "WhatsApp" ||
+        pedidoPendente.preferenciaEntrega === "Ambos"
+          ? `WhatsApp: ${pedidoPendente.whatsapp}`
+          : null,
+        `Data de nascimento: ${formatarDataBr(pedidoPendente.nascimento)}`,
+        `Hora de nascimento: ${pedidoPendente.hora}`,
+        `Cidade/Estado/País: ${pedidoPendente.cidade} - ${pedidoPendente.estado} - ${pedidoPendente.pais}`,
+        pedidoPendente.mensagem ? `Observações: ${pedidoPendente.mensagem}` : null,
+        "",
+        "Já fiz o pagamento via Pix e vou enviar o comprovante aqui nesta conversa.",
       ]
         .filter((linha) => linha !== null)
         .join("\n");
 
       const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMERO}&text=${encodeURIComponent(mensagemWhatsapp)}`;
       setLinkWhatsapp(url);
-      window.open(url, "_blank", "noopener,noreferrer");
-      janelaWhatsapp?.close();
+      // Atualiza a aba já aberta no clique, em vez de abrir uma nova: o
+      // navegador só deixa a aba ganhar foco quando é a mesma do gesto do clique.
+      if (janelaWhatsapp) {
+        janelaWhatsapp.location.replace(url);
+      }
 
-      setNome(pedido.nome.split(" ")[0] ?? "");
-      setEnviado(true);
+      setNome(pedidoPendente.nome.split(" ")[0] ?? "");
+      setEtapa("sucesso");
       window.scrollTo({
         top: document.getElementById("formulario")?.offsetTop ?? 0,
         behavior: "smooth",
@@ -263,16 +304,33 @@ function Index() {
       janelaWhatsapp?.close();
       setErroEnvio(true);
     } finally {
-      enviandoRef.current = false;
-      setEnviando(false);
+      confirmandoRef.current = false;
+      setConfirmando(false);
     }
+  }
+
+  function handleIrParaFormulario(e: MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    const campoNome = document.getElementById("nome");
+    document.getElementById("formulario")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (campoNome instanceof HTMLElement) {
+      // Foca só depois do scroll suave terminar, senão o foco interrompe a rolagem.
+      window.setTimeout(() => campoNome.focus({ preventScroll: true }), 500);
+    }
+  }
+
+  function handleNovaSolicitacao() {
+    setEtapa("formulario");
+    setPedidoPendente(null);
+    setRegistroFalhou(false);
+    setLinkWhatsapp("");
+    setNome("");
   }
 
   const inputClass =
     "w-full rounded-md border border-input bg-secondary/50 px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-gold focus:ring-1 focus:ring-ring";
   const labelClass = "mb-1.5 block text-xs uppercase tracking-[0.18em] text-muted-foreground";
-  const campoComErro = (campo: string) =>
-    errosValidacao.some((erro) => erro.campo === campo);
+  const campoComErro = (campo: string) => errosValidacao.some((erro) => erro.campo === campo);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
@@ -286,19 +344,20 @@ function Index() {
       {/* Hero */}
       <header className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-6 py-16 text-center">
         <p className="text-gradient-gold text-xs font-medium uppercase tracking-[0.35em]">
-          exaltavenus
+          EXALTAVENUS
         </p>
         <h1 className="mt-6 text-4xl leading-[1.1] sm:text-6xl">
           Seu mapa é único. Sua leitura também.
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
           A astrologia oferece uma maneira de compreender quem somos, reconhecer nossos recursos e
-          olhar com mais consciência para nossos caminhos de desenvolvimento. Na Exalta Venus, cada
+          olhar com mais consciência para nossos caminhos de desenvolvimento. Na EXALTAVENUS, cada
           mapa é analisado individualmente, com profundidade e sensibilidade, e traduzido em uma
           linguagem clara, para que você possa reconhecer a sua própria história na leitura.
         </p>
         <a
           href="#formulario"
+          onClick={handleIrParaFormulario}
           className="mt-8 inline-flex w-fit items-center justify-center rounded-full bg-gradient-to-r from-gold-soft to-gold px-9 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.03]"
         >
           Conheça seu Mapa Natal
@@ -306,7 +365,7 @@ function Index() {
       </header>
 
       {/* Mapa Natal */}
-      <section id="faq" className="mx-auto max-w-3xl scroll-mt-8 px-6 py-16">
+      <section className="mx-auto max-w-3xl px-6 py-16">
         <p className="eyebrow">Mapa Natal</p>
         <h2 className="mt-3 text-3xl sm:text-4xl">
           Um olhar sobre quem você é e sobre o que pode desenvolver.
@@ -354,9 +413,9 @@ function Index() {
             longo do tempo, encontrou novos caminhos no estudo da filosofia e da astrologia.
           </p>
           <p>
-            À primeira vista, são áreas bastante diferentes. Para mim, elas se encontram no interesse
-            por compreender como as coisas funcionam, reconhecer padrões e estabelecer relações entre
-            elementos que, isoladamente, nem sempre fazem sentido.
+            À primeira vista, são áreas bastante diferentes. Para mim, elas se encontram no
+            interesse por compreender como as coisas funcionam, reconhecer padrões e estabelecer
+            relações entre elementos que, isoladamente, nem sempre fazem sentido.
           </p>
           <p>
             Sempre gostei de investigar, organizar ideias e transformar complexidade em clareza. Na
@@ -370,19 +429,20 @@ function Index() {
             da vida que estamos vivendo. É essa perspectiva que orienta meu trabalho.
           </p>
           <p>
-            Cada mapa é analisado individualmente, com atenção às particularidades de sua configuração.
-            Procuro integrar o conhecimento astrológico a uma interpretação clara, sensível e
-            fundamentada, que ajude a reconhecer características, compreender tensões e identificar
-            possibilidades de desenvolvimento.
+            Cada mapa é analisado individualmente, com atenção às particularidades de sua
+            configuração. Procuro integrar o conhecimento astrológico a uma interpretação clara,
+            sensível e fundamentada, que ajude a reconhecer características, compreender tensões e
+            identificar possibilidades de desenvolvimento.
           </p>
           <p>
-            Não vejo o mapa como uma definição de quem alguém é ou de quem deverá se tornar. Vejo nele
-            uma ferramenta de investigação e reflexão, capaz de ampliar nossa compreensão sobre nós
-            mesmos.
+            Não vejo o mapa como uma definição de quem alguém é ou de quem deverá se tornar. Vejo
+            nele uma ferramenta de investigação e reflexão, capaz de ampliar nossa compreensão sobre
+            nós mesmos.
           </p>
           <p>
             Meu propósito é oferecer uma leitura que faça sentido para quem a recebe, não apenas
-            durante a leitura, mas também nos momentos em que a vida convida a olhar para si novamente.
+            durante a leitura, mas também nos momentos em que a vida convida a olhar para si
+            novamente.
           </p>
         </div>
       </section>
@@ -435,6 +495,10 @@ function Index() {
           href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMERO}&text=${encodeURIComponent(
             "Olá, Luciana! Recebi meu relatório de Mapa Natal e gostaria de saber sobre o atendimento individual.",
           )}`}
+          onClick={(evento) => {
+            evento.preventDefault();
+            abrirJanelaWhatsappMetadeDireita(evento.currentTarget.href);
+          }}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-8 inline-flex w-fit items-center justify-center rounded-full bg-gradient-to-r from-gold-soft to-gold px-9 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.03]"
@@ -444,7 +508,7 @@ function Index() {
       </section>
 
       {/* Perguntas frequentes */}
-      <section className="mx-auto max-w-3xl px-6 py-16">
+      <section id="faq" className="mx-auto max-w-3xl scroll-mt-8 px-6 py-16">
         <p className="eyebrow">Perguntas frequentes</p>
         <h2 className="mt-3 text-3xl sm:text-4xl">Dúvidas comuns</h2>
         <Accordion type="single" collapsible className="panel mt-8 rounded-xl px-6 sm:px-8">
@@ -470,7 +534,14 @@ function Index() {
         <p className="eyebrow">Solicitação</p>
         <h2 className="mt-3 text-3xl sm:text-4xl">Peça sua leitura</h2>
 
-        {enviado ? (
+        <div className="panel mt-8 rounded-xl p-6 sm:p-8">
+          <p className="font-display text-xl text-gold">Seu Mapa Natal</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+            Relatório de Mapa Natal — R$ 220,00 — Entrega em PDF · Até 7 dias úteis.
+          </p>
+        </div>
+
+        {etapa === "sucesso" ? (
           <div className="panel mt-8 rounded-xl p-8 text-center" role="status" aria-live="polite">
             <p className="font-display text-3xl text-gold">
               {registroFalhou
@@ -479,8 +550,8 @@ function Index() {
             </p>
             {registroFalhou && (
               <p className="mt-4 text-sm leading-relaxed text-gold-soft">
-                O pedido foi preparado, mas não consegui confirmar o registro. Envie a mensagem
-                pelo WhatsApp para garantir o atendimento.
+                O pedido foi preparado, mas não consegui confirmar o registro. Envie a mensagem pelo
+                WhatsApp para garantir o atendimento.
               </p>
             )}
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -488,20 +559,68 @@ function Index() {
               {linkWhatsapp && (
                 <a
                   href={linkWhatsapp}
+                  onClick={(evento) => {
+                    evento.preventDefault();
+                    abrirJanelaWhatsappMetadeDireita(evento.currentTarget.href);
+                  }}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gold underline-offset-4 hover:underline"
                 >
-                  toque aqui
+                  clique aqui
                 </a>
               )}
             </p>
             <button
               type="button"
-              onClick={() => setEnviado(false)}
+              onClick={handleNovaSolicitacao}
               className="mt-6 text-sm text-gold underline-offset-4 hover:underline"
             >
               Enviar outra solicitação
+            </button>
+          </div>
+        ) : etapa === "pagamento" ? (
+          <div className="panel mt-8 rounded-xl p-8 text-center" role="status" aria-live="polite">
+            <p className="font-display text-3xl text-gold">
+              Você está quase lá{pedidoPendente ? `, ${pedidoPendente.nome.split(" ")[0]}` : ""}!
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              Falta só o pagamento para o seu pedido ser confirmado. Escaneie o QR Code abaixo ou
+              use a chave Pix para pagar, depois toque no botão para confirmar.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Ao continuar, você concorda com as{" "}
+              <a
+                href="/condicoes-de-compra"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold underline-offset-4 hover:underline"
+              >
+                Condições de Compra
+              </a>
+              .
+            </p>
+            <img
+              src="/pix-qrcode.png"
+              alt="QR Code para pagamento via Pix"
+              className="mx-auto mt-6 h-56 w-56 rounded-lg border border-gold/20 bg-secondary/40 object-contain"
+            />
+            <p className="mt-6 font-display text-3xl text-gold">R$ 220,00</p>
+            {erroEnvio && (
+              <p
+                className="mt-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive-foreground"
+                role="alert"
+              >
+                Não foi possível preparar o envio. Tente novamente.
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={handleConfirmarPagamento}
+              disabled={confirmando}
+              className="mt-8 w-full rounded-full bg-gradient-to-r from-gold-soft to-gold px-8 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-[var(--shadow-halo)] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Confirmar pagamento e enviar comprovante
             </button>
           </div>
         ) : (
@@ -518,13 +637,6 @@ function Index() {
             <div className="absolute -left-[9999px]" aria-hidden="true">
               <label htmlFor="empresa">Empresa</label>
               <input id="empresa" name="empresa" type="text" tabIndex={-1} autoComplete="off" />
-            </div>
-
-            <div className="panel rounded-lg p-4">
-              <h3 className="font-display text-2xl text-gold">Seu Mapa Natal</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Relatório de Mapa Natal — R$ 220,00 — Entrega em PDF · Até 7 dias úteis.
-              </p>
             </div>
 
             <div>
@@ -550,7 +662,12 @@ function Index() {
               Usaremos seus dados de nascimento e contato apenas para preparar sua leitura e falar
               com você sobre o pedido. Ao continuar, eles serão registrados no sistema de
               atendimento e enviados ao WhatsApp informado. Consulte a{" "}
-              <a href="#privacidade" className="text-gold underline-offset-4 hover:underline">
+              <a
+                href="/politica-de-privacidade"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold underline-offset-4 hover:underline"
+              >
                 política de privacidade
               </a>
               .
@@ -563,16 +680,23 @@ function Index() {
               <select
                 id="preferenciaEntrega"
                 name="preferenciaEntrega"
+                required
                 value={preferenciaEntrega}
-                onChange={(event) =>
-                  setPreferenciaEntrega(event.target.value as "E-mail" | "WhatsApp" | "Ambos")
+                onChange={(e) =>
+                  setPreferenciaEntrega(e.target.value as "E-mail" | "WhatsApp" | "Ambos")
                 }
                 className={inputClass}
                 aria-invalid={campoComErro("preferenciaEntrega")}
               >
-                <option value="E-mail" className="bg-card">E-mail</option>
-                <option value="WhatsApp" className="bg-card">WhatsApp</option>
-                <option value="Ambos" className="bg-card">Ambos</option>
+                <option value="E-mail" className="bg-card">
+                  E-mail
+                </option>
+                <option value="WhatsApp" className="bg-card">
+                  WhatsApp
+                </option>
+                <option value="Ambos" className="bg-card">
+                  Ambos
+                </option>
               </select>
             </div>
 
@@ -598,21 +722,22 @@ function Index() {
             )}
 
             {(preferenciaEntrega === "WhatsApp" || preferenciaEntrega === "Ambos") && (
-              <div>
-                <label className={labelClass} htmlFor="whatsapp">
-                  WhatsApp
-                </label>
-                <input
-                  id="whatsapp"
-                  name="whatsapp"
-                  required
-                  minLength={8}
-                  maxLength={25}
-                  className={inputClass}
-                  placeholder="(11) 90000-0000"
-                  aria-describedby="dados-aviso"
-                  aria-invalid={campoComErro("whatsapp")}
-                />
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label className={labelClass} htmlFor="whatsapp">
+                    WhatsApp
+                  </label>
+                  <input
+                    id="whatsapp"
+                    name="whatsapp"
+                    required
+                    maxLength={25}
+                    className={inputClass}
+                    placeholder="(11) 90000-0000"
+                    aria-describedby="dados-aviso"
+                    aria-invalid={campoComErro("whatsapp")}
+                  />
+                </div>
               </div>
             )}
 
@@ -638,27 +763,16 @@ function Index() {
                   id="hora"
                   name="hora"
                   type="time"
-                  required={!horaDesconhecida}
-                  disabled={horaDesconhecida}
-                  className={`${inputClass} disabled:opacity-40`}
+                  required
+                  className={inputClass}
                   aria-invalid={campoComErro("hora")}
                 />
               </div>
             </div>
 
-            <label className="flex items-start gap-2 text-sm text-muted-foreground">
-              <input
-                type="checkbox"
-                name="horaDesconhecida"
-                checked={horaDesconhecida}
-                onChange={(e) => setHoraDesconhecida(e.target.checked)}
-                className="mt-1 h-4 w-4 accent-[var(--gold)]"
-              />
-              Não sei a hora exata do meu nascimento
-            </label>
             <p className="rounded-md border border-gold/25 bg-secondary/40 p-3 text-xs leading-relaxed text-muted-foreground">
-              ✦ O horário de nascimento é essencial para a elaboração do mapa. Se você não souber
-              essa informação, consulte nosso{" "}
+              O horário de nascimento é essencial para a elaboração do mapa. Se você não souber essa
+              informação, consulte nosso{" "}
               <a href="#faq" className="text-gold underline-offset-4 hover:underline">
                 FAQ
               </a>{" "}
@@ -706,40 +820,19 @@ function Index() {
             </div>
 
             <div>
-              <label className={labelClass} htmlFor="tipo">
-                Tipo de leitura desejada
+              <label className={labelClass} htmlFor="pais">
+                País de nascimento
               </label>
-              <select
-                id="tipo"
-                name="tipo"
+              <input
+                id="pais"
+                name="pais"
                 required
-                defaultValue="Mapa Astral Completo"
+                minLength={2}
+                maxLength={60}
+                defaultValue="Brasil"
                 className={inputClass}
-                aria-invalid={campoComErro("tipo")}
-              >
-                {servicos.map((s) => (
-                  <option key={s.nome} value={s.nome} className="bg-card">
-                    {s.nome}
-                  </option>
-                ))}
-                <option value="Ainda não sei" className="bg-card">
-                  Ainda não sei
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label className={labelClass} htmlFor="mensagem">
-                O que você busca nesta leitura?
-              </label>
-              <textarea
-                id="mensagem"
-                name="mensagem"
-                rows={4}
-                maxLength={1000}
-                className={inputClass}
-                placeholder="Conte um pouco do seu momento, dúvidas ou temas que gostaria de olhar com mais cuidado."
-                aria-invalid={campoComErro("mensagem")}
+                placeholder="Brasil"
+                aria-invalid={campoComErro("pais")}
               />
             </div>
 
@@ -752,7 +845,12 @@ function Index() {
               />
               <span>
                 Li e concordo com a{" "}
-                <a href="#privacidade" className="text-gold underline-offset-4 hover:underline">
+                <a
+                  href="/politica-de-privacidade"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gold underline-offset-4 hover:underline"
+                >
                   política de privacidade
                 </a>
                 .
@@ -784,71 +882,82 @@ function Index() {
         )}
       </section>
 
-      {/* Privacidade */}
-      <section id="privacidade" className="mx-auto max-w-3xl scroll-mt-8 px-6 py-16">
-        <p className="eyebrow">Privacidade</p>
-        <h2 className="mt-3 text-3xl sm:text-4xl">Como cuidamos dos seus dados</h2>
-        <div className="mt-6 space-y-5 text-sm leading-relaxed text-muted-foreground">
-          <div>
-            <h3 className="text-xl text-foreground">Quais dados coletamos</h3>
-            <p className="mt-2">
-              Coletamos os dados que você informa no formulário: nome, contato, data e local de
-              nascimento, horário de nascimento, tipo de leitura e observações sobre o seu pedido.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-xl text-foreground">Para que usamos</h3>
-            <p className="mt-2">
-              Usamos essas informações para entender sua solicitação, preparar a leitura, entrar
-              em contato e enviar a mensagem inicial pelo WhatsApp. Não usamos os dados para venda
-              de listas ou publicidade de terceiros.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-xl text-foreground">Onde os dados ficam</h3>
-            <p className="mt-2">
-              O pedido é enviado ao Supabase/Lovable Cloud para registro interno e os dados
-              necessários ao atendimento são compartilhados com o WhatsApp quando você prossegue
-              pelo botão de contato. O acesso ao registro é restrito à operação da exaltavenus.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-xl text-foreground">Retenção e seus direitos</h3>
-            <p className="mt-2">
-              Mantemos os dados pelo tempo necessário para atender o pedido e cumprir obrigações
-              aplicáveis. Você pode solicitar confirmação de uso, acesso, correção ou exclusão dos
-              seus dados entrando em contato pelo Instagram{" "}
-              <a
-                href="https://instagram.com/exaltavenus"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gold underline-offset-4 hover:underline"
-              >
-                @exaltavenus
-              </a>
-              .
-            </p>
-          </div>
-          <p className="text-xs text-muted-foreground/80">
-            Esta política pode ser atualizada quando houver mudanças no atendimento, nas ferramentas
-            utilizadas ou nas exigências legais aplicáveis.
-          </p>
-        </div>
-      </section>
-
       {/* Rodapé */}
       <footer className="mt-10 border-t border-border/60 px-6 py-10 text-center">
-        <p className="font-display text-2xl text-gradient-gold">exaltavenus</p>
-        <a
-          href="https://instagram.com/exaltavenus"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-block text-sm tracking-wide text-muted-foreground underline-offset-4 hover:text-gold hover:underline"
-        >
-          @exaltavenus no Instagram
-        </a>
+        <p className="text-xs italic tracking-wide text-muted-foreground/80">
+          Astrologia como ferramenta de desenvolvimento pessoal.
+        </p>
+
+        <p className="mt-4 text-sm tracking-wide text-muted-foreground">
+          <span className="font-display text-gradient-gold">EXALTAVENUS</span>
+          <span className="mx-2 text-muted-foreground/50">·</span>
+          <a
+            href="/politica-de-privacidade"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline-offset-4 hover:text-gold hover:underline"
+          >
+            Política de Privacidade
+          </a>
+          <span className="mx-2 text-muted-foreground/50">·</span>
+          <a
+            href="/condicoes-de-compra"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline-offset-4 hover:text-gold hover:underline"
+          >
+            Condições de Compra
+          </a>
+        </p>
+
+        <div className="mt-5 flex flex-col items-center gap-2 text-sm text-muted-foreground sm:flex-row sm:justify-center sm:gap-6">
+          <a
+            href="https://instagram.com/exaltavenus"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-gold hover:underline"
+          >
+            <Instagram className="h-4 w-4" aria-hidden />
+            @exaltavenus
+          </a>
+          <a
+            href="mailto:exaltadavenus@gmail.com"
+            className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-gold hover:underline"
+          >
+            <Mail className="h-4 w-4" aria-hidden />
+            exaltadavenus@gmail.com
+          </a>
+          <a
+            href="https://wa.me/5511991164433"
+            onClick={(evento) => {
+              evento.preventDefault();
+              abrirJanelaWhatsappMetadeDireita(evento.currentTarget.href);
+            }}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-gold hover:underline"
+          >
+            <MessageCircle className="h-4 w-4" aria-hidden />
+            (11) 99116-4433
+          </a>
+        </div>
+
+        <p className="mx-auto mt-5 max-w-xl text-xs leading-relaxed text-muted-foreground/70">
+          Seus dados serão utilizados para elaborar e entregar seu relatório, confirmar o pagamento
+          e entrar em contato sobre seu pedido. Para saber mais, consulte nossa{" "}
+          <a
+            href="/politica-de-privacidade"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline-offset-4 hover:text-gold hover:underline"
+          >
+            Política de Privacidade
+          </a>
+          .
+        </p>
+
         <p className="mt-4 text-xs text-muted-foreground/70">
-          Leituras astrológicas feitas à mão · Todos os direitos reservados
+          © EXALTAVENUS. Todos os direitos reservados.
         </p>
       </footer>
     </div>
