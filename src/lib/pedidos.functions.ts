@@ -19,11 +19,11 @@ export const registrarPedido = createServerFn({ method: "POST" })
         preferencia_entrega: data.preferenciaEntrega,
         nascimento: data.nascimento,
         hora: data.hora,
+        hora_desconhecida: data.horaDesconhecida,
         cidade: data.cidade,
         estado: data.estado,
-        pais: data.pais,
+        tipo: data.tipo,
         mensagem: data.mensagem,
-        consentimento: data.consentimento,
       });
 
     if (error) {
