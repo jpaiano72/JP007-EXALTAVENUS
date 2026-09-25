@@ -8,13 +8,6 @@
       "when": 1790270570414,
       "tag": "0000_add_delivery_preference_to_pedidos",
       "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1790349533286,
-      "tag": "0001_add_order_status_and_admin_access",
-      "breakpoints": true
     }
   ]
 }

@@ -29,7 +29,6 @@ export type Database = {
           nome: string
           pais: string
           preferencia_entrega: string | null
-          status: string
           whatsapp: string
         }
         Insert: {
@@ -46,7 +45,6 @@ export type Database = {
           nome: string
           pais?: string
           preferencia_entrega?: string | null
-          status?: string
           whatsapp: string
         }
         Update: {
@@ -63,7 +61,6 @@ export type Database = {
           nome?: string
           pais?: string
           preferencia_entrega?: string | null
-          status?: string
           whatsapp?: string
         }
         Relationships: []
