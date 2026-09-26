@@ -13,7 +13,7 @@ import { registrarPedido } from "@/lib/pedidos.functions";
 import { gerarPixCopiaECola } from "@/lib/pix";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "2.0.4";
+const SITE_VERSION = "2.0.5";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
