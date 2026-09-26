@@ -7,16 +7,30 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Instagram, Mail, MessageCircle } from "lucide-react";
+import { Check, Copy, Instagram, Mail, MessageCircle } from "lucide-react";
 import { UFS, validarPedido, type ErroValidacao, type PedidoInput } from "@/lib/pedido-schema";
 import { registrarPedido } from "@/lib/pedidos.functions";
+import { gerarPixCopiaECola } from "@/lib/pix";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "2.0.2";
+const SITE_VERSION = "2.0.3";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
 const WHATSAPP_NUMERO = "5511991164433";
+
+// Dados da chave Pix (CPF) usada para receber o pagamento.
+const PIX_CHAVE_FORMATADA = "254.715.818-30";
+const PIX_CHAVE = "25471581830";
+const PIX_NOME_RECEBEDOR = "Luciana Cartaxo";
+const PIX_CIDADE_RECEBEDOR = "SAO PAULO";
+const PIX_VALOR = "220.00";
+const PIX_COPIA_E_COLA = gerarPixCopiaECola({
+  chave: PIX_CHAVE,
+  nomeRecebedor: PIX_NOME_RECEBEDOR,
+  cidadeRecebedor: PIX_CIDADE_RECEBEDOR,
+  valor: PIX_VALOR,
+});
 
 // Tentativas silenciosas de registro no banco após a confirmação de pagamento.
 const TENTATIVAS_REGISTRO = 3;
@@ -171,6 +185,17 @@ function Index() {
   const [enviando, setEnviando] = useState(false);
   const confirmandoRef = useRef(false);
   const [confirmando, setConfirmando] = useState(false);
+  const [pixCopiado, setPixCopiado] = useState(false);
+
+  async function handleCopiarPix() {
+    try {
+      await navigator.clipboard.writeText(PIX_COPIA_E_COLA);
+      setPixCopiado(true);
+      setTimeout(() => setPixCopiado(false), 2500);
+    } catch {
+      setPixCopiado(false);
+    }
+  }
 
   useEffect(() => {
     const primeiroCampo = errosValidacao.find((erro) => erro.campo)?.campo;
@@ -585,8 +610,10 @@ function Index() {
               Você está quase lá{pedidoPendente ? `, ${pedidoPendente.nome.split(" ")[0]}` : ""}!
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Falta só o pagamento para o seu pedido ser confirmado. Escaneie o QR Code abaixo ou
-              use a chave Pix para pagar, depois toque no botão para confirmar.
+              Falta só o pagamento para o seu pedido ser confirmado. Escaneie o QR Code abaixo, cole
+              o código Pix copia e cola no app do seu banco ou pague usando a chave Pix (CPF){" "}
+              <span className="text-gold">{PIX_CHAVE_FORMATADA}</span>, de {PIX_NOME_RECEBEDOR}.
+              Depois, toque no botão para confirmar.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               Ao continuar, você concorda com as{" "}
@@ -605,6 +632,29 @@ function Index() {
               alt="QR Code para pagamento via Pix"
               className="mx-auto mt-6 h-56 w-56 rounded-lg border border-gold/20 bg-secondary/40 object-contain"
             />
+            <div className="mx-auto mt-6 max-w-md text-left">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Pix copia e cola
+              </p>
+              <div className="mt-2 flex items-center gap-2 rounded-md border border-gold/20 bg-secondary/40 p-3">
+                <p className="min-w-0 flex-1 break-all font-mono text-xs text-foreground">
+                  {PIX_COPIA_E_COLA}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleCopiarPix}
+                  aria-label="Copiar código Pix copia e cola"
+                  className="flex shrink-0 items-center justify-center rounded-md border border-gold/30 p-2 text-gold transition-colors hover:bg-gold/10"
+                >
+                  {pixCopiado ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                </button>
+              </div>
+              {pixCopiado && (
+                <p className="mt-1 text-xs text-gold" role="status">
+                  Código copiado!
+                </p>
+              )}
+            </div>
             <p className="mt-6 font-display text-3xl text-gold">R$ 220,00</p>
             {erroEnvio && (
               <p
