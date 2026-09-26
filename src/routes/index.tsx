@@ -13,14 +13,14 @@ import { registrarPedido } from "@/lib/pedidos.functions";
 import { gerarPixCopiaECola } from "@/lib/pix";
 
 // Mantenha em sincronia com "version" em package.json.
-const SITE_VERSION = "2.0.3";
+const SITE_VERSION = "2.0.4";
 
 // Número de destino dos pedidos (formato internacional, só dígitos).
 // Trocar aqui quando migrar para o número da Luciana.
 const WHATSAPP_NUMERO = "5511991164433";
 
 // Dados da chave Pix (CPF) usada para receber o pagamento.
-const PIX_CHAVE_FORMATADA = "254.715.818-30";
+// Usados apenas para gerar o QR Code e o copia e cola; não são exibidos como texto.
 const PIX_CHAVE = "25471581830";
 const PIX_NOME_RECEBEDOR = "Luciana Cartaxo";
 const PIX_CIDADE_RECEBEDOR = "SAO PAULO";
@@ -610,10 +610,8 @@ function Index() {
               Você está quase lá{pedidoPendente ? `, ${pedidoPendente.nome.split(" ")[0]}` : ""}!
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Falta só o pagamento para o seu pedido ser confirmado. Escaneie o QR Code abaixo, cole
-              o código Pix copia e cola no app do seu banco ou pague usando a chave Pix (CPF){" "}
-              <span className="text-gold">{PIX_CHAVE_FORMATADA}</span>, de {PIX_NOME_RECEBEDOR}.
-              Depois, toque no botão para confirmar.
+              Falta só o pagamento para o seu pedido ser confirmado. Escaneie o QR Code abaixo ou
+              cole o código Pix, copia e cola, no app do seu banco.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               Ao continuar, você concorda com as{" "}
